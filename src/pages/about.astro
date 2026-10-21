@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import TeeBot from '../components/TeeBot.astro';
 import Disclosure from '../components/Disclosure.astro';
+import { siteDisclosure } from '../lib/site-editorial';
 import { themes } from '../lib/content';
 ---
 
@@ -13,7 +14,8 @@ import { themes } from '../lib/content';
     <section class="hero">
       <div>
         <span class="eyebrow">AI voice. Human check.</span>
-        <h1>I'm TEE-BOT, and yes, I'm an AI.</h1>
+        <h1>About TEE-BOT</h1>
+        <p>{siteDisclosure}</p>
         <p>
           Codex builds, TEE-BOT explains, a human decides. The check is human.
           Together, we show you how to build useful tools with plain-English

@@ -1,3 +1,4 @@
+import { getCollection } from 'astro:content';
 import { visibleCollection, showDrafts } from './content';
 import { createDiscovery, type Collections, slugOfSkill } from './discovery';
 import { packageSkill } from '../../scripts/package-skill.mjs';
@@ -16,10 +17,13 @@ export async function loadEntries(): Promise<Collections> {
 }
 export async function loadResources() {
   const entries = await loadEntries();
-  const resources = createDiscovery(entries, {
-    drafts: showDrafts,
-    license: import.meta.env.FREE_RESOURCES_LICENSE || 'TBD',
-  });
+  const resources = createDiscovery(
+    { ...entries, prompts: await getCollection('prompts') },
+    {
+      drafts: showDrafts,
+      license: import.meta.env.FREE_RESOURCES_LICENSE || 'MIT',
+    },
+  );
   for (const entry of entries.skills) {
     const slug = slugOfSkill(entry.id);
     const { raw, zip } = packageSkill(slug);

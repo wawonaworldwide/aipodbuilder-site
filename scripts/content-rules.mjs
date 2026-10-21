@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 export function privateBrandPresent(source) {
   return /mydesigns/i.test(source);
 }
@@ -31,8 +32,32 @@ export function paletteIssues(css, canonical) {
   return issues;
 }
 
+const ownerDigests = [
+  {
+    length: 7,
+    sha256: '10fe82adb964fa73c3c60be251181c421193f56ae01ba671974d82365a08a410',
+  },
+  {
+    length: 8,
+    sha256: '799dda30b3121bbf038937342a316ac4f470812793b70269732ffa3bb0a136d3',
+  },
+];
+// Hashes avoid publishing the blocked names in the repository.
+export function blockedDigestPresent(source, digests) {
+  const words = new Set(source.toLowerCase().match(/[a-z]+/g) || []);
+  for (const word of words)
+    for (const { length, sha256 } of digests)
+      for (let i = 0; i <= word.length - length; i++)
+        if (
+          createHash('sha256')
+            .update(word.slice(i, i + length))
+            .digest('hex') === sha256
+        )
+          return true;
+  return false;
+}
 export function ownerNamePresent(source) {
-  return /site-owner|site-owner/i.test(source);
+  return blockedDigestPresent(source, ownerDigests);
 }
 
 export function pricePlacementIssue(path, source) {

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { siteDisclosure } from '../src/lib/site-editorial.ts';
 import { spawnSync } from 'node:child_process';
 import { readFileSync, existsSync } from 'node:fs';
 import { readDeploymentConfig } from './deployment-config.mjs';
@@ -113,7 +114,40 @@ try {
   assert(
     !readFileSync('dist/_headers', 'utf8').includes('X-Robots-Tag: noindex'),
   );
+
   assert(!starter.includes('/episodes/s01-day-with-my-pod-pipeline/'));
+  const promptFeed = JSON.parse(readFileSync('dist/api/prompts.json', 'utf8'));
+  assert.equal(promptFeed.count, 3);
+  assert.equal(promptFeed.license, 'MIT');
+  assert.equal(
+    JSON.parse(readFileSync('dist/api/loops.json', 'utf8')).license,
+    'MIT',
+  );
+  const llms = readFileSync('dist/llms.txt', 'utf8');
+  assert(!llms.includes('Draft entries in a preview'));
+  assert.deepEqual(llms.match(/^## .+$/gm), ['## Free prompts', '## About']);
+  assert(llms.includes('](https://aipodbuilder.com/free/s01/)'));
+  for (const [index, m] of payloads.entries()) {
+    const p = promptFeed.prompts.find((p) => p.id === m[1]);
+    assert.equal(p.prompt, m[3]);
+    assert.equal(
+      p.url,
+      'https://aipodbuilder.com/free/s01/#starter-' + (index + 1),
+    );
+    assert(llms.includes(p.url));
+    assert(readFileSync('dist/llms-full.txt', 'utf8').includes(m[3]));
+    assert(readFileSync('dist/free/s01.md', 'utf8').includes(m[3]));
+  }
+  assert(
+    decode(readFileSync('dist/about/index.html', 'utf8')).includes(
+      siteDisclosure,
+    ),
+  );
+  assert(readFileSync('dist/about.md', 'utf8').includes(siteDisclosure));
+  const apps = readFileSync('dist/apps/index.html', 'utf8');
+  assert(apps.includes('href="/free/s01/"'));
+  assert(!apps.includes('The prompts are free on the episode page.'));
+
   for (const policy of ['privacy', 'terms', 'refunds', 'license']) {
     const html = readFileSync('dist/' + policy + '/index.html', 'utf8');
     assert(!html.includes('This policy is still being reviewed.'));

@@ -1,5 +1,6 @@
 import type { CollectionEntry } from 'astro:content';
 import { transcripts, discoveryLabels } from './episode-editorial';
+import { siteDisclosure, starterIds } from './site-editorial';
 import { extractPrompt } from './markdown';
 export const origin = 'https://aipodbuilder.com';
 export type Collections = {
@@ -122,11 +123,26 @@ export function createDiscovery(
       entries.filter((e) => visibleStatus(e.data.status, options.drafts)),
     ]),
   ) as Collections;
+
+  const starters = options.drafts
+    ? []
+    : starterIds.flatMap((id) => {
+        const entry = source.prompts.find(
+          (e) => e.id === id && e.data.status === 'draft',
+        );
+        return entry ? [entry] : [];
+      });
+  const starterMarkdown =
+    '# Free POD starter prompts\n\nThese are starter drafts, not tested results. License: MIT.\n\n' +
+    starters
+      .map((e) => '## ' + e.data.title + '\n\n' + extractPrompt(e.body ?? ''))
+      .join('\n\n');
   const resources = new Map<string, Resource>();
   const add = (path: string, body: string, type = markdownType) =>
     resources.set(path, { body, type });
   const addJson = (path: string, data: unknown) =>
     add(path, JSON.stringify(data, null, 2) + '\n', jsonType);
+  if (starters.length) add('/free/s01.md', starterMarkdown + '\n');
   for (const kind of Object.keys(all) as (keyof Collections)[])
     for (const entry of all[kind]) {
       add(
@@ -137,7 +153,9 @@ export function createDiscovery(
   add(
     '/about.md',
     frontmatter({ title: 'About TEE-BOT', url: origin + '/about/' }) +
-      "# About TEE-BOT\n\nI'm TEE-BOT, and yes, I'm an AI. Codex builds, TEE-BOT explains, a human decides. The check is human.\n\nAI POD Builder is owned by Wawona Worldwide. Free prompts, loops and skills are readable without signup. Apps are one-time source-file downloads.\n\nKeep building your AI POD future.\n",
+      '# About TEE-BOT\n\n' +
+      siteDisclosure +
+      '\n\nCodex builds, TEE-BOT explains, a human decides. The check is human.\n\nAI POD Builder is owned by Wawona Worldwide. Free prompts, loops and skills are readable without signup. Apps are one-time source-file downloads.\n\nKeep building your AI POD future.\n',
   );
   const loops = all.loops
     .filter(
@@ -165,7 +183,7 @@ export function createDiscovery(
       'Copyable agent loops for print-on-demand sellers: each repeats work with a clear success check and stop conditions.',
     home: origin + '/loops/',
     inspired_by: feedCredit,
-    license: options.license || 'TBD',
+    license: options.license || 'MIT',
     updated: dated[0]?.toISOString() ?? null,
   };
   addJson('/api/loops.json', { ...envelope, count: loops.length, loops });
@@ -177,10 +195,19 @@ export function createDiscovery(
     markdown_url: origin + markdownPath(entryPath('prompts', e)),
     prompt: extractPrompt(e.body ?? ''),
   }));
+
+  for (const e of starters)
+    prompts.push({
+      ...e.data,
+      id: e.id,
+      url: origin + '/free/s01/#starter-' + (starterIds.indexOf(e.id) + 1),
+      markdown_url: origin + '/free/s01.md',
+      prompt: extractPrompt(e.body ?? ''),
+    });
   addJson('/api/prompts.json', {
     name: 'AI POD Builder Free Prompts',
     home: origin + '/prompts/',
-    license: options.license || 'TBD',
+    license: options.license || 'MIT',
     count: prompts.length,
     prompts,
   });
@@ -207,9 +234,18 @@ export function createDiscovery(
     ['Apps', 'products'],
   ];
   let llms =
-    '# AI POD Builder\n\n> Free print-on-demand build prompts, agent loops and skills, with real build notes and apps you can own.\n\nEvery prompt is free. No signup is required. Draft entries in a preview have not been checked.\n';
+    '# AI POD Builder\n\n> Free print-on-demand build prompts, agent loops and skills, with real build notes and apps you can own.\n\nEvery prompt is free. No signup is required. ' +
+    (options.drafts
+      ? 'Draft entries in a preview have not been checked.\n'
+      : '\n');
   for (const [heading, kind] of sections) {
+    if (!all[kind].length && !(kind === 'prompts' && starters.length)) continue;
     llms += `\n## ${heading}\n\n`;
+    if (kind === 'prompts' && starters.length) {
+      llms += `- [Three free POD starter prompts](${origin}/free/s01/): Read and copy the three starter drafts.\n`;
+      for (const e of starters)
+        llms += `- [${label(e.data.title)}](${origin}/free/s01/#starter-${starterIds.indexOf(e.id) + 1}): ${label(discoveryLabels[e.id].description)} (starter draft)\n`;
+    }
     for (const e of all[kind]) {
       const d = e.data;
       const editorial = discoveryLabels['id' in d ? String(d.id) : e.id];
@@ -232,6 +268,9 @@ export function createDiscovery(
   add(
     '/llms-full.txt',
     '# AI POD Builder — full free resources\n\n' +
+      (starters.length
+        ? `Source: ${origin}/free/s01/\n\n${starterMarkdown}\n\n---\n\n`
+        : '') +
       fullKinds
         .flatMap((k) =>
           all[k].map(

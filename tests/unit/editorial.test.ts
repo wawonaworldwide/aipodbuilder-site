@@ -58,8 +58,10 @@ it('exposes exact S01 discovery entries and transcript only with drafts enabled'
   ).toContain(source.transcript);
   const hidden = createDiscovery(all, { drafts: false });
   for (const [path, resource] of hidden) {
-    expect(path).not.toContain('s01');
-    expect(String(resource.body)).not.toContain('s01-');
+    expect(path).not.toMatch(/^\/(episodes|prompts)\/s01/);
+    expect(String(resource.body)).not.toContain(
+      '/episodes/s01-day-with-my-pod-pipeline/',
+    );
     expect(String(resource.body)).not.toContain(source.transcript);
   }
 });

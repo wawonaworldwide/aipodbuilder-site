@@ -7,17 +7,66 @@ import {
 } from '../../src/lib/discovery';
 import { safeJson, structuredData } from '../../src/lib/jsonld';
 import { seedCollections } from '../fixtures/content';
+import { siteDisclosure } from '../../src/lib/site-editorial';
 import { extractPrompt } from '../../src/lib/markdown';
 const json = (r: Resource | undefined) => JSON.parse(r?.body as string);
 describe('agent discovery', () => {
-  it('excludes all draft seeds in production and retains empty valid feeds', () => {
+  it('exposes only standalone starters while keeping draft routes hidden in production', () => {
     const resources = createDiscovery(seedCollections(), { drafts: false });
     expect(json(resources.get('/api/loops.json')).loops).toEqual([]);
-    expect(json(resources.get('/api/prompts.json')).prompts).toEqual([]);
+    expect(json(resources.get('/api/prompts.json')).count).toBe(3);
+    expect(
+      resources.get('/episodes/s01-day-with-my-pod-pipeline.md'),
+    ).toBeUndefined();
+    expect(resources.get('/prompts/s01-01-pipeline-map.md')).toBeUndefined();
     expect(json(resources.get('/api/skills.json')).skills).toEqual([]);
     for (const path of resources.keys())
       expect(path).not.toMatch(/e11|e17|listing-seo|ornament-bulk/);
     expect(resources.get('/llms-full.txt')?.body).not.toContain('Level 2');
+  });
+
+  it('includes exact standalone texts and working URLs with MIT licensing without changing drafts', () => {
+    const all = seedCollections();
+    const before = JSON.stringify(all);
+    const resources = createDiscovery(all, { drafts: false });
+    const feed = json(resources.get('/api/prompts.json'));
+    expect(feed.license).toBe('MIT');
+    expect(json(resources.get('/api/loops.json')).license).toBe('MIT');
+    const starters = all.prompts.filter((p) => p.id.startsWith('s01-'));
+    expect(feed.count).toBe(3);
+    starters
+      .sort((a, b) => a.data.order - b.data.order)
+      .forEach((entry, index) => {
+        const prompt = feed.prompts.find(
+          (p: { id: string }) => p.id === entry.id,
+        );
+        expect(prompt.prompt).toBe(extractPrompt(entry.body!));
+        expect(prompt.status).toBe('draft');
+        expect(prompt.url).toBe(
+          'https://aipodbuilder.com/free/s01/#starter-' + (index + 1),
+        );
+        expect(prompt.markdown_url).toBe(
+          'https://aipodbuilder.com/free/s01.md',
+        );
+        expect(resources.get('/llms-full.txt')?.body).toContain(prompt.prompt);
+        expect(resources.get('/free/s01.md')?.body).toContain(prompt.prompt);
+      });
+    expect(JSON.stringify(all)).toBe(before);
+  });
+  it('omits empty discovery headings and preview wording while listing all starter anchors', () => {
+    const resources = createDiscovery(seedCollections(), { drafts: false });
+    const text = resources.get('/llms.txt')?.body as string;
+    expect(text).not.toContain('Draft entries in a preview');
+    expect(text).toContain('](https://aipodbuilder.com/free/s01/)');
+    for (const n of [1, 2, 3])
+      expect(text).toContain('/free/s01/#starter-' + n);
+    expect(text).not.toContain('/episodes/s01');
+  });
+  it('uses the locked disclosure in About Markdown without publishing the blog post', () => {
+    const resources = createDiscovery(seedCollections(), { drafts: false });
+    expect(resources.get('/about.md')?.body).toContain(siteDisclosure);
+    expect(resources.get('/about.md')?.body).toContain('The check is human.');
+    expect(resources.get('/blog/meet-tee-bot.md')).toBeUndefined();
   });
   it('keeps all exact prompts in preview feeds, twins and full text', () => {
     const all = seedCollections();
@@ -52,10 +101,10 @@ describe('agent discovery', () => {
     retired.data.slug = 'retired-loop';
     retired.data.status = 'retired';
     all.loops.push(retired);
-    const resources = createDiscovery(all, { drafts: false, license: 'TBD' });
+    const resources = createDiscovery(all, { drafts: false, license: 'MIT' });
     const feed = json(resources.get('/api/loops.json'));
     expect(feed.count).toBe(1);
-    expect(feed.license).toBe('TBD');
+    expect(feed.license).toBe('MIT');
     expect(feed.inspired_by.author).toBe('Forward Future');
     expect(feed.loops[0]).toMatchObject({
       slug: loop.data.slug,
@@ -112,15 +161,7 @@ describe('agent discovery', () => {
     const text = createDiscovery(seedCollections(), { drafts: false }).get(
       '/llms.txt',
     )?.body as string;
-    expect(text.match(/^## .+$/gm)).toEqual([
-      '## Episodes',
-      '## Free prompts',
-      '## Loop Library',
-      '## Agent skills',
-      '## Blog',
-      '## Apps',
-      '## About',
-    ]);
+    expect(text.match(/^## .+$/gm)).toEqual(['## Free prompts', '## About']);
     for (const group of robotsText()
       .split('\n\n')
       .filter((g) => g.startsWith('User-agent:'))) {

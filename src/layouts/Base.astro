@@ -29,7 +29,10 @@ const path = new URL(canonical).pathname;
 const contentPage = Object.entries(entries).some(([kind, items]) =>
   items.some((e) => entryPath(kind as keyof typeof entries, e) === path),
 );
-const markdown = contentPage || path === '/about/' ? markdownPath(path) : null;
+const markdown =
+  contentPage || path === '/about/' || path === '/free/s01/'
+    ? markdownPath(path)
+    : null;
 const graph = structuredData(path, title, description, entries);
 const fonts = `@font-face{font-family:Inter;src:url('${interUrl}') format('woff2');font-weight:400;font-display:swap}@font-face{font-family:'Pixelify Sans';src:url('${pixelUrl}') format('woff2');font-weight:700;font-display:swap}@font-face{font-family:'JetBrains Mono';src:url('${monoUrl}') format('woff2');font-weight:400;font-display:swap}`;
 ---

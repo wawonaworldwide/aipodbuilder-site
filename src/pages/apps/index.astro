@@ -4,6 +4,7 @@ import ProductCard from '../../components/ProductCard.astro';
 import TestModeRibbon from '../../components/TestModeRibbon.astro';
 import { visibleCollection } from '../../lib/content';
 const entries = await visibleCollection('products');
+const episodes = await visibleCollection('episodes');
 ---
 
 <Base
@@ -44,7 +45,11 @@ const entries = await visibleCollection('products');
       </ul>
       <p>
         Prefer to build it yourself?{' '}
-        <a href="/episodes/">The prompts are free on the episode page.</a>
+        <a href={episodes.length ? '/episodes/' : '/free/s01/'}>
+          {episodes.length
+            ? 'The prompts are free on the episode page.'
+            : 'Start with three free POD prompts.'}
+        </a>
       </p>
     </section>
   </div>

@@ -1,9 +1,11 @@
+import { createHash } from 'node:crypto';
 import { expect, it } from 'vitest';
 import {
   privateBrandPresent,
   disallowedCopyPresent,
   paletteIssues,
   ownerNamePresent,
+  blockedDigestPresent,
   pricePlacementIssue,
 } from '../../scripts/content-rules.mjs';
 import { readFileSync } from 'node:fs';
@@ -34,15 +36,23 @@ it('fails the build guard when a palette token drifts', () => {
   );
 });
 
-it('rejects owner names in every public text format, including metadata', () => {
+it('rejects blocked hashes in public formats without plaintext names', () => {
+  const word = 'exampleperson';
+  const digests = [
+    {
+      length: word.length,
+      sha256: createHash('sha256').update(word).digest('hex'),
+    },
+  ];
   for (const copy of [
-    '<meta content="site-owner">',
-    '# site-owner',
-    '{"author":"site-owner"}',
-    '<rss>site-owner</rss>',
-    'site-owner',
+    '<meta content="EXAMPLEPERSON">',
+    '# ExamplePerson',
+    '{"author":"ExamplePerson"}',
+    '<rss>ExamplePerson</rss>',
+    'prefixexamplepersonsuffix',
   ])
-    expect(ownerNamePresent(copy)).toBe(true);
+    expect(blockedDigestPresent(copy, digests)).toBe(true);
+  expect(blockedDigestPresent('examplepersom', digests)).toBe(false);
   expect(
     ownerNamePresent('TEE-BOT (AI), human-reviewed. Wawona Worldwide.'),
   ).toBe(false);

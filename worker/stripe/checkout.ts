@@ -90,7 +90,7 @@ export async function checkout(
     return reply(
       {
         message: managed
-          ? 'Test checkout is paused. site-owner needs to activate Managed Payments in Stripe Settings before trying again.'
+          ? 'Test checkout is paused until Managed Payments is activated in Stripe Settings.'
           : 'Test checkout could not start. Please try again shortly.',
         code: managed ? 'managed_payments_setup' : 'checkout_unavailable',
       },

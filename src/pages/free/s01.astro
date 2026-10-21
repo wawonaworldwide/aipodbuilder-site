@@ -4,14 +4,11 @@ import Base from '../../layouts/Base.astro';
 import CopyBlock from '../../components/CopyBlock.astro';
 import IncentivePanel from '../../components/IncentivePanel.astro';
 import { showDrafts } from '../../lib/content';
+import { starterIds } from '../../lib/site-editorial';
 import { extractPrompt } from '../../lib/markdown';
 if (showDrafts)
   return Astro.redirect('/episodes/s01-day-with-my-pod-pipeline/#prompts', 302);
-const ids = [
-  's01-01-pipeline-map',
-  's01-02-research-inbox',
-  's01-03-approval-desk',
-];
+const ids = starterIds;
 const prompts = await Promise.all(
   ids.map(async (id) => {
     const entry = await getEntry('prompts', id);

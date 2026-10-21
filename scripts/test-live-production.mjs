@@ -6,6 +6,7 @@ import {
   renameSync,
 } from 'node:fs';
 import assert from 'node:assert/strict';
+import { siteDisclosure } from '../src/lib/site-editorial.ts';
 import { ownerNamePresent, pricePlacementIssue } from './content-rules.mjs';
 import { readDeploymentConfig } from './deployment-config.mjs';
 const origin = 'https://aipodbuilder.com';
@@ -195,6 +196,58 @@ for (const path of ['/privacy/', '/terms/', '/refunds/', '/license/']) {
       !body.includes('This policy is still being reviewed.'),
   );
 }
+
+const llms = (await get('/llms.txt')).body;
+const full = (await get('/llms-full.txt')).body;
+const feed = JSON.parse((await get('/api/prompts.json')).body);
+check(
+  'Three standalone starter records with MIT license',
+  feed.count === 3 && feed.prompts.length === 3 && feed.license === 'MIT',
+);
+check(
+  'No empty discovery sections or preview warning',
+  JSON.stringify(llms.match(/^## .+$/gm)) ===
+    JSON.stringify(['## Free prompts', '## About']) &&
+    !llms.includes('Draft entries in a preview'),
+);
+check(
+  'Starter landing page listed for agents',
+  llms.includes('](https://aipodbuilder.com/free/s01/)'),
+);
+check(
+  'Loop resource license is MIT',
+  JSON.parse((await get('/api/loops.json')).body).license === 'MIT',
+);
+for (const [index, m] of prompts.entries()) {
+  const p = feed.prompts.find((p) => p.id === m[1]);
+  check(
+    'Exact starter in JSON and full text ' + (index + 1),
+    p?.prompt === m[3] && full.includes(m[3]),
+  );
+  check(
+    'Starter discovery anchor ' + (index + 1),
+    p?.url === origin + '/free/s01/#starter-' + (index + 1) &&
+      llms.includes(p.url),
+  );
+  check(
+    'Starter Markdown text ' + (index + 1),
+    (await get('/free/s01.md')).body.includes(m[3]),
+  );
+}
+check(
+  'Locked About disclosure in HTML',
+  decode((await get('/about/')).body).includes(siteDisclosure),
+);
+check(
+  'Locked About disclosure in Markdown',
+  (await get('/about.md')).body.includes(siteDisclosure),
+);
+const apps = (await get('/apps/')).body;
+check(
+  'Apps points to available starter prompts',
+  apps.includes('href="/free/s01/"') &&
+    !apps.includes('The prompts are free on the episode page.'),
+);
 const report = {
   origin,
   method: 'GET only; no signup submitted',

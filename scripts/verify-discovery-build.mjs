@@ -17,9 +17,9 @@ export function verifyDiscoveryBuild(drafts) {
   const prompts = parse('api/prompts.json');
   const skills = parse('api/skills.json');
   assert.equal(loops.count, drafts ? 2 : 0);
-  assert.equal(prompts.count, drafts ? 6 : 0);
+  assert.equal(prompts.count, drafts ? 6 : 3);
   assert.equal(skills.count, 0);
-  assert.equal(loops.license, 'TBD');
+  assert.equal(loops.license, 'MIT');
   for (const loop of loops.loops) {
     assert.equal(loop.status, drafts ? 'draft' : 'tested');
     assert.deepEqual(parse('api/loops/' + loop.slug + '.json'), loop);
@@ -28,6 +28,15 @@ export function verifyDiscoveryBuild(drafts) {
   const full = read('llms-full.txt');
   for (const prompt of prompts.prompts) {
     assert(full.includes(prompt.prompt));
+
+    if (!drafts && prompt.url.includes('/free/s01/')) {
+      assert(read('free/s01.md').includes(prompt.prompt));
+      assert.equal(prompt.status, 'draft');
+      assert(
+        !existsSync('dist/episodes/s01-day-with-my-pod-pipeline/index.html'),
+      );
+      continue;
+    }
     assert(read('prompts/' + prompt.id + '.md').includes(prompt.prompt));
     const episode = readdirSync('src/content/episodes').find((f) =>
       f.startsWith(prompt.episode + '-'),
