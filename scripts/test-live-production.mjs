@@ -54,7 +54,9 @@ for (const file of files('dist').filter((f) =>
   /\.(html|md|json|xml|txt|svg)$/.test(f),
 )) {
   const path = '/' + file.slice(5).replace(/index\.html$/, '');
-  const r = await get(path);
+  let r = await get(path);
+  if (path === '/404.html' && r.status === 307 && r.headers.location === '/404')
+    r = await get('/404');
   check(
     path + ' status',
     r.status === 200 || (path === '/404.html' && r.status === 404),
@@ -107,6 +109,7 @@ for (const file of files('dist').filter((f) =>
   }
 }
 for (const path of [
+  '/not-a-real-page',
   '/api/checkout',
   '/api/stripe/webhook',
   '/api/order-status',
