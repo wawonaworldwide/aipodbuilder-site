@@ -1,0 +1,4 @@
+Level 2 for the ornament creator: mockups and a smarter handoff.
+- "Create mockups" per sheet: place each finished non-map design into my approved mockup template (path in settings) inside a print box, keep the hanging hole and rope in front, and save <city-country>__<style>__personalized-back-mockup.png plus mockup-manifest.csv (city, country, style, status, source file, mockup file).
+- Let me add my own styles and upload example images from the page.
+- Optional: send the handoff to my listing app's intake URL (setting). Ask me before using any API key or password.

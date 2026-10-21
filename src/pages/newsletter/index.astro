@@ -1,0 +1,48 @@
+---
+import Base from '../../layouts/Base.astro';
+import EmailCapture from '../../components/EmailCapture.astro';
+import TeeBot from '../../components/TeeBot.astro';
+---
+
+<Base
+  title="Weekly niches + bonus prompts"
+  description="A free weekly email for print-on-demand sellers: niche picks, bonus prompts, AI news, and what we built. Every video prompt stays free."
+>
+  <div class="container">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">A fresh place to start, every week</span>
+        <h1>Weekly niches + bonus prompts</h1>
+        <p>A little help for your next print-on-demand build.</p>
+        <ul>
+          <li>
+            Fresh POD niche picks every week, with why they might sell (and a
+            trademark check)
+          </li>
+          <li>Bonus prompts you won't find in the videos</li>
+          <li>AI news filtered for POD sellers, and what we built this week</li>
+        </ul>
+        <p>
+          Free, never paywalled. Every video prompt stays free on the site, no
+          email needed.
+        </p>
+      </div>
+      <div class="hero-art">
+        <TeeBot pose="celebrate" />
+        <span class="art-label">A SMALL WIN FOR YOUR INBOX</span>
+      </div>
+    </section>
+    <section class="panel reading">
+      <h2>Your next build starts with an idea.</h2>
+      <EmailCapture id="newsletter-main-email" options />
+      <p class="small muted">
+        {import.meta.env.PUBLIC_EMAIL_PROVIDER === 'kit'
+          ? 'We use Kit to send it. Unsubscribe in one click.'
+          : 'This preview saves preferences for testing. Newsletter delivery is not connected yet.'}
+      </p>
+    </section>
+    <p class="article-section">
+      <a href="/free/s01/">Start with the free prompts ↗</a>
+    </p>
+  </div>
+</Base>

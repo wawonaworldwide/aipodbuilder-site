@@ -1,0 +1,26 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BlogList from '../../../components/BlogList.astro';
+import { visibleCollection } from '../../../lib/content';
+export async function getStaticPaths() {
+  const posts = (await visibleCollection('posts')).sort(
+    (a, b) => b.data.published.getTime() - a.data.published.getTime(),
+  );
+  const pages = Math.ceil(posts.length / 10);
+  return Array.from({ length: Math.max(0, pages - 1) }, (_, i) => ({
+    params: { page: String(i + 2) },
+    props: {
+      entries: posts.slice((i + 1) * 10, (i + 2) * 10),
+      page: i + 2,
+      pages,
+    },
+  }));
+}
+interface Props {
+  entries: CollectionEntry<'posts'>[];
+  page: number;
+  pages: number;
+}
+---
+
+<BlogList {...Astro.props} />

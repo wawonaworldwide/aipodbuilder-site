@@ -1,0 +1,45 @@
+---
+import Base from '../../../layouts/Base.astro';
+import RecoveryForm from '../../../components/RecoveryForm.astro';
+import TeeBot from '../../../components/TeeBot.astro';
+import { storeMode } from '../../../lib/content';
+const deployment = import.meta.env.PUBLIC_DEPLOY_ENV || 'local';
+---
+
+<Base
+  title="Get a fresh download"
+  description="Request a fresh link for an AI POD Builder app you bought. Use your purchase email to recover an eligible download."
+  noindex
+>
+  <div class="container reading page-intro">
+    <TeeBot pose="point" />
+    {storeMode === 'off' ? (
+      <>
+        <h1>App downloads are coming soon.</h1>
+        <p>
+          Purchases and download recovery are not available in this preview.
+        </p>
+      </>
+    ) : (
+      <>
+        <h1>Let’s get you a fresh download.</h1>
+        <p>
+          Links last 72 hours and allow up to 5 downloads. Enter the email you
+          used to buy your app.
+        </p>
+        <section class="panel">
+          <RecoveryForm />
+        </section>
+        {deployment === 'local' && (
+          <p class="small muted">
+            Local test: messages are saved on this PC. No delivery email is
+            sent.
+          </p>
+        )}
+      </>
+    )}
+    <p>
+      <a href="/apps/">Back to the apps ↗</a>
+    </p>
+  </div>
+</Base>

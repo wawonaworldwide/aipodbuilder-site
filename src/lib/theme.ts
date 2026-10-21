@@ -1,0 +1,2 @@
+export const themeBootstrap =
+  "\n      (() => {\n        let theme;\n        try {\n          theme = localStorage.getItem('aipb-theme');\n        } catch {\n          /* Storage may be disabled. */\n        }\n        if (theme !== 'light' && theme !== 'dark')\n          theme = window.matchMedia('(prefers-color-scheme: light)').matches\n            ? 'light'\n            : 'dark';\n        document.documentElement.dataset.theme = theme;\n      })();\n    ";

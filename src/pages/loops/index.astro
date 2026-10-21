@@ -1,0 +1,75 @@
+---
+import Base from '../../layouts/Base.astro';
+import CopyBlock from '../../components/CopyBlock.astro';
+import FilterPanel from '../../components/FilterPanel.astro';
+import LoopCard from '../../components/LoopCard.astro';
+import Callout from '../../components/Callout.astro';
+import { visibleCollection } from '../../lib/content';
+const entries = await visibleCollection('loops');
+const options = [
+  'Listings',
+  'Design QA',
+  'Research',
+  'Publishing',
+  'YouTube',
+  'Operations',
+].map((label) => ({ label, value: label.toLowerCase().replaceAll(' ', '-') }));
+---
+
+<Base
+  title="Loop Library"
+  description="Free agent loops for print-on-demand sellers. Repeat a job, check the result, and stop safely. Browse by category or tag."
+>
+  <div class="container">
+    <header class="page-intro">
+      <span class="eyebrow">Print-on-demand, one repeatable job at a time</span>
+      <h1>Loop Library</h1>
+      <p>
+        Copyable agent loops for POD sellers. Each one repeats a job, checks its
+        work, and knows when to stop.
+      </p>
+    </header>
+    <Callout title="What's a loop? Repeat, check, stop.">
+      <p>
+        An agent is an AI that can carry out steps for you. A loop gives it a
+        job, a success check, and a clear stopping point.
+      </p>
+    </Callout>
+    <CopyBlock
+      title="Ask your agent to pick a loop"
+      text="Read https://aipodbuilder.com/api/loops.json and pick the loop that fits this task."
+    />
+    <FilterPanel
+      chips
+      search
+      fields={[{ key: 'category', label: 'Category', options }]}
+    >
+      <div class="grid">
+        {entries.map((entry) => (
+          <LoopCard entry={entry} />
+        ))}
+      </div>
+    </FilterPanel>
+    <section class="section">
+      <h2>Share a loop</h2>
+      <p>
+        We review everything before publishing. Never include keys or private
+        code.
+      </p>
+      <a href="https://x.com/AIPODBuilder">
+        Share it with @AIPODBuilder on X ↗
+      </a>
+    </section>
+    <p class="small muted">
+      The <a href="/api/loops.json">JSON feed</a> lets agents read these loops.
+      Every loop is free to copy.
+    </p>
+    <p class="section-credit">
+      Inspired by{' '}
+      <a href="https://signals.forwardfuture.com/loop-library/">
+        Forward Future's Loop Library
+      </a>
+      .
+    </p>
+  </div>
+</Base>

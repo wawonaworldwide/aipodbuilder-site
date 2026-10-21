@@ -1,0 +1,37 @@
+---
+import Base from '../../layouts/Base.astro';
+import TeeBot from '../../components/TeeBot.astro';
+import Callout from '../../components/Callout.astro';
+const deployment = import.meta.env.PUBLIC_DEPLOY_ENV || 'local';
+const emailConnected =
+  deployment !== 'local' && import.meta.env.PUBLIC_EMAIL_PROVIDER === 'kit';
+---
+
+<Base
+  title="Newsletter confirmation"
+  description="The confirmation page for Weekly niches + bonus prompts, AI POD Builder’s free print-on-demand email."
+  noindex
+>
+  <div class="container reading page-intro">
+    <TeeBot pose="celebrate" />
+    <h1>
+      {emailConnected
+        ? 'Check your inbox to confirm.'
+        : 'Thanks for trying the signup.'}
+    </h1>
+    {emailConnected ? (
+      <p>Use the confirmation email to confirm the updates you chose.</p>
+    ) : (
+      <Callout
+        title={deployment === 'local' ? 'Local preview' : 'Website preview'}
+      >
+        <p>
+          {deployment === 'local'
+            ? 'In this local test, signups are saved on this PC. No confirmation email is sent.'
+            : 'Preview signups are saved for testing. No confirmation or newsletter email is sent yet.'}
+        </p>
+      </Callout>
+    )}
+    <a href="/prompts/">Take a free prompt while you wait ↗</a>
+  </div>
+</Base>

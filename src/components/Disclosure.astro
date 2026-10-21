@@ -1,0 +1,12 @@
+---
+interface Props {
+  affiliate?: boolean;
+}
+const { affiliate = false } = Astro.props;
+---
+
+<p class="small muted">
+  {affiliate
+    ? 'Some links are affiliate links. If you buy through one, Wawona Worldwide may earn a commission at no extra cost to you.'
+    : 'Narrated by TEE-BOT, an AI voice. Every result gets a human review.'}
+</p>

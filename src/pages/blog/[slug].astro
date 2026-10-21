@@ -1,0 +1,113 @@
+---
+import { render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import DraftRibbon from '../../components/DraftRibbon.astro';
+import TLDR from '../../components/TLDR.astro';
+import Toc from '../../components/Toc.astro';
+import Faq from '../../components/Faq.astro';
+import Disclosure from '../../components/Disclosure.astro';
+import Callout from '../../components/Callout.astro';
+import CopyBlock from '../../components/CopyBlock.astro';
+import IncentivePanel from '../../components/IncentivePanel.astro';
+import {
+  visibleCollection,
+  formatDate,
+  readingMinutes,
+} from '../../lib/content';
+import { extractPrompt } from '../../lib/markdown';
+export async function getStaticPaths() {
+  return (await visibleCollection('posts')).map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+interface Props {
+  entry: CollectionEntry<'posts'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content, headings } = await render(entry);
+const example = (await visibleCollection('prompts')).find(
+  (p) => p.id === 'e11-01-opening',
+);
+---
+
+<Base title={d.title} description={d.description}>
+  <article class="container">
+    <header class="page-intro">
+      <Breadcrumbs
+        items={[{ label: 'Blog', href: '/blog/' }, { label: d.title }]}
+      />
+      <span class="eyebrow">Print-on-demand build notes</span>
+      <h1>{d.title}</h1>
+      <p>{d.dek}</p>
+      <DraftRibbon draft={d.status === 'draft'} />
+      <p class="small muted">
+        TEE-BOT (AI) · human-reviewed
+        <br />
+        {formatDate(d.published)}
+        {d.updated ? ` · Updated ${formatDate(d.updated)}` : ''} ·{' '}
+        {readingMinutes(entry.body ?? '')} min read
+      </p>
+      <ul class="tag-list">
+        {d.tags.map((tag) => (
+          <li>
+            <a href={`/blog/tags/${tag}/`}>{tag}</a>
+          </li>
+        ))}
+      </ul>
+    </header>
+    {d.hero && (
+      <img src={d.hero.src} alt={d.hero.alt} width="1200" height="630" />
+    )}
+    <div class="article-grid">
+      <div>
+        <TLDR items={d.tldr} />
+        {d.has_affiliate_links && <Disclosure affiliate />}
+        <div class="prose">
+          <Content />
+        </div>
+        {example && (
+          <section class="article-section" data-seed-id={example.id}>
+            <h2>Try a build from the workbench</h2>
+            <p class="muted">
+              This Episode 11 prompt is still a draft. Copy it for free, or{' '}
+              <a href={`/prompts/${example.id}/`}>read its notes</a>.
+            </p>
+            <CopyBlock
+              title={example.data.title}
+              text={extractPrompt(example.body ?? '')}
+            />
+          </section>
+        )}
+        <Callout variant="BROKE" title="BROKE: when a build stops">
+          <p>
+            Keep the error message. Ask Codex to explain it in plain English
+            before making a change.
+          </p>
+        </Callout>
+        <Callout variant="FIXED" title="FIXED: check the change">
+          <p>
+            Run the same step again. A fix needs a real check before you call it
+            done.
+          </p>
+        </Callout>
+        <Faq items={d.faq} />
+        <section class="panel">
+          <h2>Take the resources</h2>
+          <p>
+            The <a href="/prompts/">video prompts</a> and{' '}
+            <a href="/loops/">agent loops</a> are free to copy. Visit the{' '}
+            <a href="/skills/">agent skills</a> page for available skill
+            packages.
+          </p>
+        </section>
+        <IncentivePanel />
+        <p>Keep building your AI POD future.</p>
+      </div>
+      <Toc headings={headings} />
+    </div>
+  </article>
+</Base>

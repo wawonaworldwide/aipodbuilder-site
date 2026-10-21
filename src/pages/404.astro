@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import TeeBot from '../components/TeeBot.astro';
+import Button from '../components/Button.astro';
+---
+
+<Base
+  title="Page not found"
+  description="This AI POD Builder page isn’t here. Find the free prompts, browse the builds, or head back to the workbench."
+  noindex
+>
+  <div class="container reading page-intro">
+    <TeeBot pose="point" />
+    <span class="eyebrow">404 · Wrong turn, easy fix.</span>
+    <h1>This page wandered off the workbench.</h1>
+    <p>
+      That address doesn’t lead to a published page. Let’s get you back to
+      building.
+    </p>
+    <div class="actions">
+      <Button href="/">Back home</Button>
+      <Button href="/prompts/" variant="secondary">
+        Find a free prompt
+      </Button>
+    </div>
+  </div>
+</Base>

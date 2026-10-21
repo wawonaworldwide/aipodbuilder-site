@@ -1,0 +1,165 @@
+---
+import Base from '../layouts/Base.astro';
+import TeeBot from '../components/TeeBot.astro';
+import Button from '../components/Button.astro';
+import EpisodeCard from '../components/EpisodeCard.astro';
+import LoopCard from '../components/LoopCard.astro';
+import ProductCard from '../components/ProductCard.astro';
+import PostCard from '../components/PostCard.astro';
+import StageMap from '../components/StageMap.astro';
+import IncentivePanel from '../components/IncentivePanel.astro';
+import { visibleCollection } from '../lib/content';
+const episodes = (await visibleCollection('episodes')).sort(
+  (a, b) => (b.data.number ?? 0) - (a.data.number ?? 0),
+);
+const loops = await visibleCollection('loops');
+const products = await visibleCollection('products');
+const posts = (await visibleCollection('posts')).sort(
+  (a, b) => b.data.published.getTime() - a.data.published.getTime(),
+);
+---
+
+<Base
+  title="Build along, one prompt at a time"
+  description="Real print-on-demand builds with Codex. Copy free prompts and loops, learn with TEE-BOT, and make tools of your own."
+>
+  <div class="container">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">Your next small win starts here</span>
+        <h1>Watch Codex build real print-on-demand tools. Then take them.</h1>
+        <p class="muted">
+          I'm TEE-BOT, an AI voice. I build a whole POD pipeline with Codex, one
+          plain-English prompt at a time. I show you what worked, what broke,
+          and what it really cost.
+        </p>
+        <div class="actions">
+          <Button href="#newsletter">Get weekly niches + bonus prompts</Button>
+          <Button
+            variant="secondary"
+            href="https://www.youtube.com/@AIPODBuilder"
+          >
+            Watch on YouTube ↗
+          </Button>
+        </div>
+        <p class="small">
+          <a
+            href={
+              episodes[0]
+                ? `/episodes/${episodes[0].data.slug}/#prompts`
+                : '/free/s01/'
+            }
+          >
+            Or grab this week's free prompts ↓
+          </a>
+        </p>
+        <p class="small muted">
+          Free every week. Every video prompt stays free on the site.
+          Unsubscribe any time.
+        </p>
+      </div>
+      <div class="hero-art">
+        <span class="corner">MEET YOUR BUILD BUDDY</span>
+        <TeeBot decorative={false} bob />
+        <span class="art-label">TEE-BOT / AI voice. Human check.</span>
+      </div>
+    </section>
+    <section class="section">
+      <div class="section-heading">
+        <h2>The latest build</h2>
+        <a href="/episodes/">All episodes ↗</a>
+      </div>
+      {episodes[0] ? (
+        <EpisodeCard entry={episodes[0]} />
+      ) : (
+        <p class="muted">
+          The first build is being checked. Free prompts will appear here after
+          it’s ready.
+        </p>
+      )}
+    </section>
+    <section class="section">
+      <h2>How it works</h2>
+      <div class="grid">
+        <div>
+          <span class="step-number">01 / WATCH</span>
+          <h3>Watch the build</h3>
+          <p class="muted">
+            See what worked and what broke. I leave the wrong turns in.
+          </p>
+        </div>
+        <div>
+          <span class="step-number">02 / COPY</span>
+          <h3>Copy the prompts</h3>
+          <p class="muted">
+            Every video prompt is free. Copy, paste, and build along. No email
+            needed.
+          </p>
+        </div>
+        <div>
+          <span class="step-number">03 / BUILD</span>
+          <h3>Make it yours</h3>
+          <p class="muted">
+            Build it yourself or grab the finished app. Change the files to fit
+            your shop.
+          </p>
+        </div>
+      </div>
+    </section>
+    <StageMap />
+    <section class="section">
+      <div class="section-heading">
+        <h2>Let a loop take a turn.</h2>
+        <a href="/loops/">Explore the Loop Library ↗</a>
+      </div>
+      <p class="muted">
+        A loop repeats a job, checks its work, and knows when to stop.
+      </p>
+      <div class="grid">
+        {loops.slice(0, 3).map((entry) => (
+          <LoopCard entry={entry} />
+        ))}
+      </div>
+      {!loops.length && (
+        <p class="muted">
+          The first loops are being checked. They’ll be free to copy.
+        </p>
+      )}
+    </section>
+    <section class="section">
+      <div class="section-heading">
+        <h2>Apps you own</h2>
+        <a href="/apps/">See the apps ↗</a>
+      </div>
+      <p class="muted">
+        Pay once, get the source files and build prompts, and change anything.
+        No subscription.
+      </p>
+      <div class="grid">
+        {products.slice(0, 3).map((entry) => (
+          <ProductCard entry={entry} />
+        ))}
+      </div>
+      {!products.length && (
+        <p class="muted">The first app is still on the workbench.</p>
+      )}
+    </section>
+    <IncentivePanel main />
+    <section class="section">
+      <div class="section-heading">
+        <h2>Notes from the workbench</h2>
+        <a href="/blog/">Read the blog ↗</a>
+      </div>
+      <div class="grid">
+        {posts.slice(0, 3).map((entry) => (
+          <PostCard entry={entry} />
+        ))}
+      </div>
+      {!posts.length && (
+        <p class="muted">
+          The first notes will appear after their human review.
+        </p>
+      )}
+    </section>
+  </div>
+</Base>

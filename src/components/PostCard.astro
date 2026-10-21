@@ -1,0 +1,25 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import EntryStatus from './EntryStatus.astro';
+import { formatDate, readingMinutes } from '../lib/content';
+interface Props {
+  entry: CollectionEntry<'posts'>;
+}
+const { entry } = Astro.props;
+---
+
+<article class="panel content-card">
+  <span class="eyebrow">From the workbench</span>
+  <h3>
+    <a href={`/blog/${entry.id}/`}>{entry.data.title}</a>
+  </h3>
+  <p class="muted">{entry.data.description}</p>
+  <EntryStatus status={entry.data.status} />
+  <p class="muted small">
+    {formatDate(entry.data.published)} · {readingMinutes(entry.body ?? '')} min
+    read
+  </p>
+  <a class="card-action" href={`/blog/${entry.id}/`}>
+    Read the post <span aria-hidden="true">↗</span>
+  </a>
+</article>

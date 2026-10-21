@@ -1,0 +1,81 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import EntryStatus from './EntryStatus.astro';
+interface Props {
+  entry: CollectionEntry<'loops'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+---
+
+<article
+  class="panel content-card"
+  data-filter-item
+  data-category={d.category.toLowerCase().replaceAll(' ', '-')}
+  data-search={`${d.name} ${d.summary} ${d.tags.join(' ')}`.toLowerCase()}
+  data-loop-card
+>
+  <span class="eyebrow">{d.category}</span>
+  <p class="small muted">By {d.author}</p>
+  <h3>
+    <a href={`/loops/${d.slug}/`}>{d.name}</a>
+  </h3>
+  <p class="muted">{d.summary}</p>
+  <EntryStatus status={d.status} date={d.date_tested} result={d.result} />
+  <pre class="loop-excerpt"><code>{d.loop_prompt}</code></pre>
+  <div class="meta-row">
+    <button
+      type="button"
+      class="utility-button"
+      data-copy-loop
+      aria-label={`Copy loop: ${d.name}`}
+    >
+      Copy loop
+    </button>
+    <a class="card-action" href={`/loops/${d.slug}/`}>
+      Read the loop ↗
+    </a>
+  </div>
+  {d.related_episode && (
+    <p class="small muted">Related: {d.related_episode} · coming soon</p>
+  )}
+  <span role="status" aria-live="polite" class="small"></span>
+</article>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-loop-card]').forEach((card) => {
+    card
+      .querySelector('[data-copy-loop]')
+      ?.addEventListener('click', async () => {
+        const status = card.querySelector('[role="status"]');
+        try {
+          await navigator.clipboard.writeText(
+            card.querySelector('code')?.textContent ?? '',
+          );
+          if (status) status.textContent = 'Copied!';
+        } catch {
+          if (status)
+            status.textContent = 'Open the loop to select and copy the text.';
+        }
+      });
+  });
+</script>
+<style>
+  .loop-excerpt {
+    white-space: pre-wrap;
+    overflow: hidden;
+    max-height: 80px;
+    font-size: 14px;
+    line-height: 1.7;
+    position: relative;
+    color: var(--muted);
+    margin-block: 16px;
+  }
+  .loop-excerpt::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    inset-inline: 0;
+    height: 24px;
+    background: linear-gradient(transparent, var(--surface));
+  }
+</style>

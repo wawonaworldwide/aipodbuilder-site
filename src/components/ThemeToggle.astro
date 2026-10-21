@@ -1,0 +1,64 @@
+<button
+  class="theme-toggle"
+  type="button"
+  aria-label="Use light mode"
+  data-theme-toggle
+>
+  <span aria-hidden="true">◐</span>
+  <span data-theme-label>Light mode</span>
+</button>
+<script>
+  const button = document.querySelector<HTMLButtonElement>(
+    '[data-theme-toggle]',
+  );
+  const preference = window.matchMedia('(prefers-color-scheme: light)');
+  function updateLabel() {
+    const next =
+      document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+    button?.setAttribute('aria-label', `Use ${next} mode`);
+    const label = button?.querySelector('[data-theme-label]');
+    if (label)
+      label.textContent = `${next === 'light' ? 'Light' : 'Dark'} mode`;
+  }
+  button?.addEventListener('click', () => {
+    const theme =
+      document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = theme;
+    try {
+      localStorage.setItem('aipb-theme', theme);
+    } catch {
+      /* Theme still works without storage. */
+    }
+    updateLabel();
+  });
+  preference.addEventListener('change', () => {
+    try {
+      if (localStorage.getItem('aipb-theme')) return;
+    } catch {
+      /* Follow system preference. */
+    }
+    document.documentElement.dataset.theme = preference.matches
+      ? 'light'
+      : 'dark';
+    updateLabel();
+  });
+  updateLabel();
+</script>
+<style>
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    min-height: 44px;
+    background: transparent;
+    color: var(--foreground);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  button span:first-child {
+    font-size: 22px;
+  }
+</style>

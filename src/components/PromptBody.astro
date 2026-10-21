@@ -1,0 +1,59 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import CopyBlock from './CopyBlock.astro';
+import DraftRibbon from './DraftRibbon.astro';
+import EntryStatus from './EntryStatus.astro';
+import { extractPrompt } from '../lib/markdown';
+import { formatDate } from '../lib/content';
+interface Props {
+  entry: CollectionEntry<'prompts'>;
+  heading?: boolean;
+}
+const { entry, heading = true } = Astro.props;
+const d = entry.data;
+const sections = (entry.body ?? '').split(/^## /m);
+const see = sections
+  .find((s) => s.startsWith("What you'll see"))
+  ?.split('\n')
+  .slice(1)
+  .join('\n')
+  .trim();
+const notes = sections
+  .find((s) => s.startsWith('Notes'))
+  ?.split('\n')
+  .slice(1)
+  .join('\n')
+  .trim();
+---
+
+<article class="article-section" id={entry.id} data-seed-id={entry.id}>
+  <DraftRibbon draft={d.status === 'draft'} />
+  {heading && <h3>{d.title}</h3>}
+  <div class="meta-row">
+    <EntryStatus status={d.status} date={d.date_tested} result={d.result} />
+    <span class="small muted">{d.model_used}</span>
+  </div>
+  <p class="muted">{d.summary}</p>
+  <CopyBlock title={d.title} text={extractPrompt(entry.body ?? '')} />
+  <h3>What you'll see</h3>
+  <p>{see ?? d.what_it_builds}</p>
+  <h3>Notes</h3>
+  <p>{notes ?? 'Follow the approval steps in the prompt.'}</p>
+  {d.date_tested && (
+    <p>
+      Tested {formatDate(d.date_tested)}: {d.result}
+    </p>
+  )}
+  {d.fix_prompt && <CopyBlock title={`Fix: ${d.title}`} text={d.fix_prompt} />}
+  <p class="small">
+    <a href={`/prompts/${entry.id}/`}>Open this prompt on its own ↗</a>
+  </p>
+</article>
+<style>
+  .article-section > h3 {
+    margin-top: 32px;
+  }
+  .article-section > .muted {
+    margin-top: 16px;
+  }
+</style>

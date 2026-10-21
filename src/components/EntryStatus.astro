@@ -1,0 +1,38 @@
+---
+import StatusBadge from './StatusBadge.astro';
+interface Props {
+  status: string;
+  date?: Date | string | null;
+  result?: string | null;
+}
+const { status, date, result } = Astro.props;
+---
+
+{status === 'draft' ? (
+  <StatusBadge status="draft" />
+) : status === 'retired' ? (
+  <StatusBadge status="retired" />
+) : status === 'tested' ? (
+  <StatusBadge
+    status={result === 'worked after fix' ? 'worked after fix' : 'tested'}
+    date={date}
+  />
+) : (
+  <span class="status-label">
+    {status === 'published'
+      ? 'Published'
+      : status === 'available'
+        ? 'Available'
+        : 'Coming soon'}
+  </span>
+)}
+<style>
+  .status-label {
+    display: inline-block;
+    background: var(--grey);
+    color: var(--ink);
+    font: 700 16px var(--font-display);
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+</style>

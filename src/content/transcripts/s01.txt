@@ -1,0 +1,64 @@
+3 a.m. I'm asleep. My shop isn't. Research, designs, listings, all moving on their own. And by 
+tonight, it'll have cost me exactly three clicks. This is how most print-on-demand sellers spend a 
+day. One app to research niches. A chat window to write image prompts. Another site to make the 
+images. A background remover in another tab. A spreadsheet for titles and tags. Then download, 
+upload, copy, paste. Repeat. Five apps. Five workflows. And you're the glue holding them together. 
+This is my day. One system. It does the research, the prompts, the images, the background removal 
+and the listings. My job is this. Approve. Reject. So here's one full day, from my first coffee to 
+new listings on Etsy. Watch how many times I actually do something. Quick honesty thing first. I'm 
+TEE-BOT, and yes, I'm an AI voice. That's on purpose: if the whole pipeline can run on its own, so 
+can the video about it. Everything you'll see was really built with Codex, and every result gets a 
+human review before it ships. Those reviews are the clicks you're about to see. My day actually 
+starts the night before. While I'm asleep, a scheduled research job goes looking for niches. It 
+starts from seed ideas and pulls real Amazon search suggestions from a keyword tool. Then, for each 
+phrase, it opens the actual Amazon search, clicks through to page three, and reads how many 
+products are competing there. Every phrase gets a confidence score from those signals, and 
+everything lands in one inbox, waiting for me. Every idea rides the same track. Eight stages, one 
+board. A card only moves forward when a step is done, and three of those stages wait for me. If 
+something breaks at 3 a.m., it doesn't push through. It parks the card, writes down what went 
+wrong, and leaves it for the morning. Nothing reaches Etsy without passing my gates. Morning. 
+Coffee. And before I've finished the first sip, my phone tells me what's waiting: a backlog of 
+about 4,700 research ideas I can browse anytime. But what actually needs me today is just a few 
+approvals. Here's one: vintage Indian motorcycle shirts, the kind of thing people actually type 
+into search. Each card tells me the niche, the search phrase people actually type, and why it might 
+sell. One click opens the real Amazon search. And see this number? That's the product count from 
+page three of the search, not page one. In my experience, page one often doesn't show the true 
+picture, so the system digs deeper. This is gate one. Would a real person wear this? Approve. 
+Already everywhere, or just not my style? Reject. I'm not doing the research anymore. I'm judging 
+it. And that's the part that should stay human: taste. Today, three niches made the cut and became 
+new batches. Coffee's still warm. That's click number one, by the way. Pace yourself, TEE-BOT. The 
+moment I approve a niche, the system goes and collects evidence: what's already selling in that 
+niche, the styles, the layouts, the vibe. By lunch, the research images are ready. Gate two. These 
+are references, not designs to copy. Every reference shows its Best Sellers Rank, and the system 
+only pulls products ranked under four million, so these are shirts that actually sell. I pick the 
+ones that show what buyers respond to. Approve. Approve. That one's off. Reject. Once I approve 
+them, each reference gets analyzed: the text on the design, the visual style, the typography, the 
+colors, the layout and the mood. Those notes become the references the new designs are built from. 
+And if a slogan is involved, every phrase gets a trademark check, and I sign off on it myself. Five 
+seconds now saves a takedown later. Click two. Still not sweating. Here's what used to eat my whole 
+morning: write a prompt, generate, tweak one word, generate again. Twenty tries for one good image. 
+Now the system writes the prompts from the approved research and makes the designs on its own. 
+Afternoon. Gate three, the big one. Approve. Approve. Reject: text incorrect. Approve. Reject: too 
+busy for a small print. And this one's close, so I send it back to regenerate. I'm checking the 
+things that cost you sales: spelling, clean edges, and whether it reads from across a room. When I 
+reject one, I tag a reason, and those reasons shape the next batch. Every click teaches it a bit 
+more of my taste. Today, twenty-five designs got a decision: ten kept, fifteen rejected. And that's 
+click three. Somebody get me a chair. And notice what I didn't do: remove a single background. That 
+happens after I approve. The system cuts each design out cleanly, sizes it for print, checks every 
+pixel, puts it on a shirt mockup, and writes the listing: title, tags, and description, inside 
+Etsy's rules. From there, the automation lists it onto Etsy for me, while tomorrow's research is 
+already running. A niche idea last night. A listing on Etsy today. And I never opened another app 
+to get here. No downloading, no uploading, no copying titles between tabs. So here's the whole day. 
+Three new niches. Sixty-nine research images. A hundred and twenty-three new designs. And the next 
+listings are lining up for Etsy. My part on camera today? Just three clicks: one niche, one 
+research image, one design. The system did the rest. The usual way, you do every step yourself. My 
+way, I make the decisions, and the system does the steps. The check is human. Everything else, it 
+handles. None of this needs you to be a coder. Every piece of this pipeline started as a 
+plain-English prompt in Codex. Over the coming videos I'll teach you how to build all of this, and 
+more, one piece at a time. The research app. The design generator. My own background remover. The 
+approval desk. The listing writer. Publishing to Etsy. Each one gets its own video, and every 
+prompt is free. And if you want a head start, every week I send out fresh POD niche picks, plus 
+bonus prompts that aren't in the videos. It's free. The link's on screen and in the description. 
+And it won't all be step-by-step builds. Next up, I put the newest AI image models head-to-head on 
+real t-shirt designs, and along the way you'll get AI news through a POD seller's eyes, plus 
+experiments where I test ideas and show you the real results. Keep building your AI POD future.

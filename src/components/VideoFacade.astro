@@ -1,0 +1,103 @@
+---
+import TeeBot from './TeeBot.astro';
+interface Props {
+  youtubeId: string | null;
+  title: string;
+}
+const { youtubeId, title } = Astro.props;
+---
+
+<div class="video-facade" data-video={youtubeId} data-title={title}>
+  {youtubeId ? (
+    <button type="button" aria-label={`Play video: ${title}`}>
+      <img
+        src={`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`}
+        alt=""
+        width="480"
+        height="360"
+        loading="lazy"
+      />
+      <span>▶ Play the build</span>
+    </button>
+  ) : (
+    <div class="video-pending">
+      <TeeBot pose="point" />
+      <p>Video coming after I record the build.</p>
+    </div>
+  )}
+</div>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-video]').forEach((facade) => {
+    facade.querySelector('button')?.addEventListener('click', () => {
+      const id = facade.dataset.video;
+      if (!id || !/^[\w-]{11}$/.test(id)) return;
+      const frame = document.createElement('iframe');
+      frame.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1`;
+      frame.title = facade.dataset.title ?? 'Episode video';
+      frame.allow = 'autoplay; encrypted-media; picture-in-picture';
+      frame.allowFullscreen = true;
+      facade.replaceChildren(frame);
+    });
+  });
+</script>
+<style>
+  .video-facade {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-block: 32px;
+    aspect-ratio: 16/9;
+    min-height: 200px;
+  }
+  .video-facade button {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: var(--panel);
+    border: 0;
+    color: var(--cream);
+  }
+  .video-facade button img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .video-facade button span {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    background: var(--ink);
+    color: var(--cream);
+    padding: 12px 24px;
+  }
+  .video-pending {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    text-align: center;
+  }
+  .video-pending :global(img) {
+    width: 140px;
+    height: 140px;
+  }
+  .video-pending p {
+    font-size: 14px;
+    margin: 8px 0 0;
+  }
+  .video-facade :global(iframe) {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .video-facade:has(.video-pending) {
+    aspect-ratio: auto;
+    min-height: 280px;
+  }
+  .video-pending {
+    min-height: 280px;
+  }
+</style>

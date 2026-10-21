@@ -1,0 +1,103 @@
+---
+import { render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import DraftRibbon from '../../components/DraftRibbon.astro';
+import EntryStatus from '../../components/EntryStatus.astro';
+import CopyBlock from '../../components/CopyBlock.astro';
+import { visibleCollection, formatDate } from '../../lib/content';
+export async function getStaticPaths() {
+  return (await visibleCollection('loops')).map((entry) => ({
+    params: { slug: entry.data.slug },
+    props: { entry },
+  }));
+}
+interface Props {
+  entry: CollectionEntry<'loops'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+const episode = (await visibleCollection('episodes')).find(
+  (e) =>
+    d.related_episode?.startsWith(e.data.id + ' ') ||
+    d.related_episode === e.data.id,
+);
+---
+
+<Base title={d.name} description={d.summary}>
+  <div class="container">
+    <header class="page-intro">
+      <Breadcrumbs
+        items={[{ label: 'Loop Library', href: '/loops/' }, { label: d.name }]}
+      />
+      <span class="eyebrow">Free print-on-demand loop · {d.category}</span>
+      <h1>{d.name}</h1>
+      <p>{d.summary}</p>
+      <p class="small muted">
+        By {d.author} · Added {formatDate(d.date_added)}
+      </p>
+      <DraftRibbon draft={d.status === 'draft'} />
+      <EntryStatus status={d.status} date={d.date_tested} result={d.result} />
+      {d.date_tested && (
+        <p class="small">
+          Tested {formatDate(d.date_tested)} · {d.result}
+        </p>
+      )}
+      {d.inspired_by && (
+        <p class="small">
+          Inspired by <a href={d.inspired_by.url}>{d.inspired_by.title}</a> by{' '}
+          {d.inspired_by.author}.
+        </p>
+      )}
+    </header>
+    <div class="reading">
+      <section id="loop" data-seed-id={entry.id}>
+        <h2>The loop</h2>
+        <CopyBlock title={d.name} text={d.loop_prompt} />
+      </section>
+      <section class="article-section">
+        <h2>Success check</h2>
+        <p>{d.success_check}</p>
+        <h2>Stop conditions</h2>
+        <ul>
+          {d.stop_conditions.map((s) => (
+            <li>{s}</li>
+          ))}
+        </ul>
+        <h2>Approval boundaries</h2>
+        <p>These are the actions that need your permission.</p>
+        <ul>
+          {d.approval_boundaries.map((s) => (
+            <li>{s}</li>
+          ))}
+        </ul>
+      </section>
+      <div class="prose">
+        <Content />
+      </div>
+      <section class="article-section">
+        <h2>Related build</h2>
+        {episode ? (
+          <a href={`/episodes/${episode.data.slug}/`}>{episode.data.title}</a>
+        ) : (
+          <p class="muted">
+            {d.related_episode ?? 'Build episode'} · coming soon
+          </p>
+        )}
+      </section>
+    </div>
+    <p>
+      <a href={`/api/loops/${d.slug}.json`}>JSON</a> · Structured loop
+      instructions for agents.
+    </p>
+    <p class="section-credit">
+      Inspired by{' '}
+      <a href="https://signals.forwardfuture.com/loop-library/">
+        Forward Future's Loop Library
+      </a>
+      .
+    </p>
+  </div>
+</Base>

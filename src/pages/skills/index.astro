@@ -1,0 +1,41 @@
+---
+import Base from '../../layouts/Base.astro';
+import { visibleCollection } from '../../lib/content';
+const entries = await visibleCollection('skills');
+---
+
+<Base
+  title="Free agent skills"
+  description="Free print-on-demand agent skills: reusable instructions for your AI tools. The first skill is coming with Episode 11."
+>
+  <div class="container">
+    <header class="page-intro">
+      <span class="eyebrow">Instructions your agent can reuse</span>
+      <h1>Free agent skills</h1>
+      <p>
+        A skill is a file of instructions your AI agent can follow. These skills
+        are for print-on-demand builds, and they’ll all be free.
+      </p>
+    </header>
+    {entries.length === 0 && (
+      <p class="panel">First skill coming with Episode 11</p>
+    )}
+    <div class="grid">
+      {entries.map((entry) => (
+        <article class="panel content-card">
+          <h2>
+            <a href={`/skills/${entry.id.replace(/\/skill$/i, '')}/`}>
+              {entry.data.name}
+            </a>
+          </h2>
+          <p>{entry.data.description}</p>
+        </article>
+      ))}
+    </div>
+    <p class="article-section">
+      <a href="/prompts/">
+        Use a free prompt while the first skill is being built ↗
+      </a>
+    </p>
+  </div>
+</Base>

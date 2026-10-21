@@ -1,0 +1,175 @@
+---
+interface Props {
+  id?: string;
+  mode?: 'weekly' | 'updates' | 'launch';
+  options?: boolean;
+}
+const { id = 'weekly-email', mode = 'weekly', options = false } = Astro.props;
+const cta =
+  mode === 'weekly'
+    ? 'Get weekly niches + bonus prompts'
+    : mode === 'updates'
+      ? 'Email me when this app gets an update'
+      : "Email me when it's out (and get the launch coupon)";
+const deployment = import.meta.env.PUBLIC_DEPLOY_ENV || 'local';
+const emailConnected =
+  deployment !== 'local' && import.meta.env.PUBLIC_EMAIL_PROVIDER === 'kit';
+const episode = /^\/episodes\/(e\d+)-/.exec(Astro.url.pathname)?.[1];
+const siteKey =
+  import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
+---
+
+<form
+  action="/api/subscribe"
+  method="post"
+  class="email-capture"
+  data-email-mode={mode}
+  data-sitekey={siteKey}
+  aria-label={cta}
+>
+  <p id={`${id}-notice`} class="small muted">
+    {deployment === 'local'
+      ? 'Local test: your signup stays on this PC. No email is sent.'
+      : emailConnected
+        ? 'Confirm your subscription using the email we send you.'
+        : 'Preview: your preferences are saved for testing. No email is sent.'}
+  </p>
+  <fieldset>
+    <legend class="sr-only">{cta}</legend>
+    <label for={id}>Your email address</label>
+    <div class="email-row">
+      <input
+        id={id}
+        type="email"
+        name="email"
+        placeholder="you@example.com"
+        autocomplete="email"
+        maxlength="254"
+        required
+        aria-describedby={`${id}-notice ${id}-status`}
+      />
+      <button type="submit">{cta}</button>
+    </div>
+    <input type="hidden" name="mode" value={mode} />
+    <input type="hidden" name="source" value={Astro.url.pathname} />
+    {episode && <input type="hidden" name="episode" value={episode} />}
+    <div class="company-field" aria-hidden="true">
+      <label for={`${id}-company`}>
+        Company
+        <input
+          id={`${id}-company`}
+          name="company"
+          tabindex="-1"
+          autocomplete="off"
+        />
+      </label>
+    </div>
+    {options && (
+      <div class="email-options">
+        {mode === 'weekly' && (
+          <label>
+            <input type="checkbox" name="app_updates" /> Tell me when an app
+            gets an update
+          </label>
+        )}
+        <label>
+          <input type="checkbox" name="launch_coupons" /> Send me launch coupons
+          for new apps
+        </label>
+      </div>
+    )}
+    <div data-turnstile role="group" aria-label="Bot check"></div>
+  </fieldset>
+  <p
+    id={`${id}-status`}
+    role="status"
+    aria-live="polite"
+    tabindex="-1"
+    class="small form-status"
+  ></p>
+  <noscript>
+    <p>
+      Enable JavaScript to complete the bot check and sign up. Every prompt
+      remains free to read and copy.
+    </p>
+  </noscript>
+  <p class="small muted">
+    Free. Unsubscribe any time. <a href="/privacy/">Your privacy</a>.
+  </p>
+</form>
+<script>
+  import { setupEmailForms } from '../lib/email-form';
+  setupEmailForms();
+</script>
+<style>
+  fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
+  label {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  .email-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .email-row input {
+    flex: 1;
+    min-width: 180px;
+    background: var(--background);
+    color: var(--foreground);
+    border: 1px solid var(--border);
+    padding: 12px;
+    border-radius: 4px;
+  }
+  .email-row button {
+    background: var(--teal);
+    color: var(--ink);
+    padding: 12px 16px;
+    border: 0;
+    border-radius: 4px;
+    font-size: 16px;
+    min-height: 48px;
+    cursor: pointer;
+  }
+  .email-row button:disabled {
+    cursor: wait;
+    opacity: 0.7;
+  }
+  .email-capture > p:last-child {
+    margin: 12px 0 0;
+  }
+  .email-options {
+    margin-top: 16px;
+  }
+  .email-options label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+  }
+  .email-options input {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+  .company-field {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  [data-turnstile] {
+    margin-top: 16px;
+    min-height: 65px;
+  }
+  .form-status {
+    margin-block: 12px;
+  }
+</style>

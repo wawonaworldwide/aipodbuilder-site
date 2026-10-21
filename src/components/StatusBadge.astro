@@ -1,0 +1,42 @@
+---
+interface Props {
+  status: 'draft' | 'tested' | 'worked after fix' | 'retired';
+  date?: string | Date | null;
+}
+const { status, date } = Astro.props;
+if (status === 'tested' && !date)
+  throw new Error('A tested badge requires a date.');
+const dateLabel = date ? new Date(date).toISOString().slice(0, 10) : '';
+const labels = {
+  draft: 'Untested draft',
+  tested: `Tested ${dateLabel}`,
+  'worked after fix': 'Worked after a fix',
+  retired: 'Retired',
+};
+---
+
+<span class:list={['status', status.replaceAll(' ', '-')]}>
+  {labels[status]}
+</span>
+<style>
+  .status {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: var(--ink);
+    font: 600 16px/1.4 var(--font-display);
+  }
+  .draft {
+    background: var(--magenta);
+  }
+  .tested {
+    background: var(--lime);
+  }
+  .worked-after-fix {
+    background: var(--orange);
+  }
+  .retired {
+    background: var(--grey);
+  }
+</style>

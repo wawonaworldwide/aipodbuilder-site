@@ -1,0 +1,137 @@
+---
+import '../styles/global.css';
+import { themeBootstrap } from '../lib/theme';
+import { loadEntries } from '../lib/discovery-content';
+import { entryPath, markdownPath } from '../lib/discovery';
+import { structuredData } from '../lib/jsonld';
+import JsonLd from '../components/JsonLd.astro';
+import interUrl from '@fontsource/inter/files/inter-latin-400-normal.woff2?url';
+import pixelUrl from '@fontsource/pixelify-sans/files/pixelify-sans-latin-700-normal.woff2?url';
+import monoUrl from '@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2?url';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { pageTitle, canonicalUrl, siteUrl } from '../lib/seo';
+interface Props {
+  title: string;
+  description: string;
+  noindex?: boolean;
+}
+const { title, description, noindex = false } = Astro.props;
+if (description.length > 160)
+  throw new Error('Page description exceeds 160 characters.');
+const deployment = import.meta.env.PUBLIC_DEPLOY_ENV || 'local';
+const analytics = import.meta.env.PUBLIC_CF_ANALYTICS_TOKEN || '';
+const indexable = import.meta.env.PUBLIC_INDEXABLE === 'true';
+const canonical = canonicalUrl(Astro.url.pathname);
+const fullTitle = pageTitle(title);
+const entries = await loadEntries();
+const path = new URL(canonical).pathname;
+const contentPage = Object.entries(entries).some(([kind, items]) =>
+  items.some((e) => entryPath(kind as keyof typeof entries, e) === path),
+);
+const markdown = contentPage || path === '/about/' ? markdownPath(path) : null;
+const graph = structuredData(path, title, description, entries);
+const fonts = `@font-face{font-family:Inter;src:url('${interUrl}') format('woff2');font-weight:400;font-display:swap}@font-face{font-family:'Pixelify Sans';src:url('${pixelUrl}') format('woff2');font-weight:700;font-display:swap}@font-face{font-family:'JetBrains Mono';src:url('${monoUrl}') format('woff2');font-weight:400;font-display:swap}`;
+---
+
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta
+      name="robots"
+      content={
+        noindex
+          ? 'noindex, nofollow'
+          : indexable
+            ? 'index, follow'
+            : 'noindex, follow'
+      }
+    />
+    <link rel="canonical" href={canonical} />
+    <link rel="describedby" href="/llms.txt" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="AI POD Builder RSS"
+      href="/rss.xml"
+    />
+    {markdown && <link rel="alternate" type="text/markdown" href={markdown} />}
+    <JsonLd data={graph} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="AI POD Builder" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={`${siteUrl}/og-default.png`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="AI POD Builder: free prompts, real builds, and TEE-BOT"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@AIPODBuilder" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={`${siteUrl}/og-default.png`} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link
+      rel="preload"
+      href={interUrl}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href={pixelUrl}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <style is:inline set:html={fonts}></style>
+    <script is:inline set:html={themeBootstrap}></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">
+      Skip to content
+    </a>
+    <SiteHeader />
+    <div class="foundation-note">
+      <div class="container">
+        {deployment === 'local'
+          ? 'LOCAL TEST · No real charges. Emails stay on this PC.'
+          : deployment === 'preview'
+            ? import.meta.env.STORE_MODE === 'off'
+              ? 'PREVIEW · App downloads coming soon.'
+              : 'PREVIEW · Stripe test mode. No real charges.'
+            : import.meta.env.STORE_MODE === 'off'
+              ? 'Free prompts. App downloads coming soon.'
+              : 'TEST MODE · No real charges.'}
+      </div>
+    </div>
+    <main id="main" tabindex="-1">
+      <slot />
+      {markdown && (
+        <div class="container">
+          <p class="small">
+            <a href={markdown}>View as Markdown</a>
+          </p>
+        </div>
+      )}
+    </main>
+    <SiteFooter />
+    {analytics && !noindex && (
+      <script
+        is:inline
+        defer
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={JSON.stringify({ token: analytics })}
+      ></script>
+    )}
+  </body>
+</html>

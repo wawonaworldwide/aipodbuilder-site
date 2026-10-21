@@ -1,0 +1,15 @@
+---
+import { storeMode } from '../lib/content';
+---
+
+{storeMode === 'test' && <p class="test-mode">TEST MODE: no real charges</p>}
+<style>
+  .test-mode {
+    background: var(--teal);
+    color: var(--ink);
+    padding: 8px 16px;
+    border-radius: 4px;
+    font: 700 18px var(--font-display);
+    max-width: none;
+  }
+</style>

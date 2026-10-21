@@ -1,0 +1,53 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import PromptBody from '../../components/PromptBody.astro';
+import IncentivePanel from '../../components/IncentivePanel.astro';
+import { visibleCollection, stageLabel, episodeLabel } from '../../lib/content';
+import { promptTitles } from '../../lib/seo';
+export async function getStaticPaths() {
+  return (await visibleCollection('prompts')).map((entry) => ({
+    params: { id: entry.id },
+    props: { entry },
+  }));
+}
+interface Props {
+  entry: CollectionEntry<'prompts'>;
+}
+const { entry } = Astro.props;
+const episode = (await visibleCollection('episodes')).find(
+  (e) => e.data.id === entry.data.episode,
+);
+---
+
+<Base
+  title={promptTitles[entry.id] ?? entry.data.title.slice(0, 40)}
+  description={entry.data.summary}
+>
+  <div class="container">
+    <header class="page-intro">
+      <Breadcrumbs
+        items={[
+          { label: 'Prompts', href: '/prompts/' },
+          { label: entry.data.title },
+        ]}
+      />
+      <span class="eyebrow">
+        Free print-on-demand prompt · {stageLabel(entry.data.stage)}
+      </span>
+      <h1>{entry.data.title}</h1>
+      {episode && (
+        <p class="small">
+          <a href={`/episodes/${episode.data.slug}/#prompts`}>
+            All prompts from {episodeLabel(episode.data.id)} ↗
+          </a>
+        </p>
+      )}
+    </header>
+    <div class="reading">
+      <PromptBody entry={entry} heading={false} />
+    </div>
+    <IncentivePanel />
+  </div>
+</Base>

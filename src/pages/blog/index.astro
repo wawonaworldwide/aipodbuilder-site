@@ -1,0 +1,12 @@
+---
+import BlogList from '../../components/BlogList.astro';
+import { visibleCollection } from '../../lib/content';
+const posts = (await visibleCollection('posts')).sort(
+  (a, b) => b.data.published.getTime() - a.data.published.getTime(),
+);
+---
+
+<BlogList
+  entries={posts.slice(0, 10)}
+  pages={Math.max(1, Math.ceil(posts.length / 10))}
+/>

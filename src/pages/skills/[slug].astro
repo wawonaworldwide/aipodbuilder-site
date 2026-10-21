@@ -1,0 +1,46 @@
+---
+import { render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import DraftRibbon from '../../components/DraftRibbon.astro';
+import { visibleCollection } from '../../lib/content';
+export async function getStaticPaths() {
+  return (await visibleCollection('skills')).map((entry) => ({
+    params: { slug: entry.id.replace(/\/skill$/i, '') },
+    props: { entry },
+  }));
+}
+interface Props {
+  entry: CollectionEntry<'skills'>;
+}
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<Base title={entry.data.name.slice(0, 40)} description={entry.data.description}>
+  <article class="container reading page-intro">
+    <Breadcrumbs
+      items={[
+        { label: 'Skills', href: '/skills/' },
+        { label: entry.data.name },
+      ]}
+    />
+    <span class="eyebrow">Free print-on-demand skill</span>
+    <h1>{entry.data.name}</h1>
+    <DraftRibbon draft={entry.data.status === 'draft'} />
+    <p>{entry.data.description}</p>
+    <p class="small muted">
+      Version {entry.data.version} · License: {entry.data.license}
+    </p>
+    <div class="prose">
+      <Content />
+    </div>
+    <p class="small muted">
+      <a href={`${Astro.url.pathname}SKILL.md`}>Read SKILL.md</a> ·{' '}
+      <a href={`${Astro.url.pathname.replace(/\/$/, '')}.zip`}>
+        Download skill ZIP
+      </a>
+    </p>
+  </article>
+</Base>

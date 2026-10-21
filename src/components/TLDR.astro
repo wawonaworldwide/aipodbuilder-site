@@ -1,0 +1,31 @@
+---
+interface Props {
+  items: string[];
+  title?: string;
+}
+const { items, title = 'The short version' } = Astro.props;
+---
+
+<aside class="panel tldr">
+  <h2>{title}</h2>
+  <ul>
+    {items.map((item) => (
+      <li>{item}</li>
+    ))}
+  </ul>
+</aside>
+<style>
+  .tldr {
+    margin-block: 32px;
+  }
+  .tldr h2 {
+    font-size: 28px;
+  }
+  .tldr ul {
+    padding-left: 24px;
+    margin-bottom: 0;
+  }
+  .tldr li + li {
+    margin-top: 8px;
+  }
+</style>

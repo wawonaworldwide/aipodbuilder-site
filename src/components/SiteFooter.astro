@@ -1,0 +1,97 @@
+<footer>
+  <div class="container footer-grid">
+    <div>
+      <a class="wordmark" href="/">
+        AI POD Builder
+      </a>
+      <p class="muted small">
+        Codex builds. TEE-BOT explains.
+        <br />
+        The check is human.
+      </p>
+      <p>Keep building your AI POD future.</p>
+    </div>
+    <div>
+      <p class="footer-label">Follow the build</p>
+      <a href="https://www.youtube.com/@AIPODBuilder">YouTube ↗</a>
+      <a href="https://x.com/AIPODBuilder">X @AIPODBuilder ↗</a>
+      <a href="/newsletter/">Weekly niches + bonus prompts</a>
+      <a href="/rss.xml">RSS feed</a>
+      <a href="/llms.txt">llms.txt · for agents</a>
+    </div>
+    <div>
+      <p class="footer-label">Make yourself at home</p>
+      <a href="/about/">About TEE-BOT</a>
+      <a href="/skills/">Free agent skills</a>
+      <a href="/free/s01/">Free starter prompts</a>
+      <a href="mailto:tee-bot@aipodbuilder.com">Contact support</a>
+      <div class="legal-links">
+        <a href="/privacy/">Privacy</a>
+        <a href="/terms/">Terms</a>
+        <a href="/refunds/">Refunds</a>
+        <a href="/license/">License</a>
+      </div>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>Owned by Wawona Worldwide</span>
+    <span>Free prompts. Small wins. Keep building.</span>
+  </div>
+</footer>
+<style>
+  footer {
+    margin-top: 64px;
+    padding-block: 48px 24px;
+    border-top: 1px solid var(--border);
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    gap: 48px;
+  }
+  .wordmark {
+    display: block;
+    color: var(--foreground);
+    text-decoration: none;
+    font: 700 28px var(--font-display);
+    margin-bottom: 16px;
+  }
+  .footer-label {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .footer-grid a:not(.wordmark) {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 14px;
+  }
+  .legal-links {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    padding-top: 32px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  @media (max-width: 959px) {
+    .footer-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 639px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .footer-bottom {
+      flex-direction: column;
+    }
+  }
+</style>

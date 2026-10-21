@@ -1,0 +1,18 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BlogList from '../../../components/BlogList.astro';
+import { visibleCollection } from '../../../lib/content';
+export async function getStaticPaths() {
+  const entries = await visibleCollection('posts');
+  return [...new Set(entries.flatMap((e) => e.data.tags))].map((tag) => ({
+    params: { tag },
+    props: { tag, entries: entries.filter((e) => e.data.tags.includes(tag)) },
+  }));
+}
+interface Props {
+  tag: string;
+  entries: CollectionEntry<'posts'>[];
+}
+---
+
+<BlogList {...Astro.props} />

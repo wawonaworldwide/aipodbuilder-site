@@ -1,0 +1,9 @@
+---
+import { safeJson } from '../lib/jsonld';
+interface Props {
+  data: unknown;
+}
+const { data } = Astro.props;
+---
+
+<script type="application/ld+json" is:inline set:html={safeJson(data)}></script>

@@ -1,0 +1,52 @@
+---
+import Base from '../../layouts/Base.astro';
+import PromptCard from '../../components/PromptCard.astro';
+import FilterPanel from '../../components/FilterPanel.astro';
+import { visibleCollection, stageLabel, episodeLabel } from '../../lib/content';
+const entries = await visibleCollection('prompts');
+const unique = (key: 'stage' | 'episode') =>
+  [...new Set(entries.map((e) => e.data[key]))].map((value) => ({
+    value,
+    label: key === 'stage' ? stageLabel(value) : episodeLabel(value),
+  }));
+const tags = [...new Set(entries.flatMap((e) => e.data.tags))]
+  .sort()
+  .map((value) => ({ value, label: value }));
+---
+
+<Base
+  title="Free prompts for every build"
+  description="Copy every print-on-demand video prompt for free. Filter by episode, stage, or tag and build along with Codex."
+>
+  <div class="container">
+    <header class="page-intro">
+      <span class="eyebrow">Always free. Always yours to copy.</span>
+      <h1>Pick a prompt. Make a small win.</h1>
+      <p>
+        Plain-English prompts for your print-on-demand tools. Every step stays
+        free, including the follow-ups. No email wall.
+      </p>
+      {!entries.length && (
+        <p>
+          <a class="button" href="/free/s01/">
+            Get the three starter prompts
+          </a>
+        </p>
+      )}
+    </header>
+    <FilterPanel
+      search
+      fields={[
+        { key: 'stage', label: 'Pipeline stage', options: unique('stage') },
+        { key: 'episode', label: 'Episode', options: unique('episode') },
+        { key: 'tags', label: 'Tag', options: tags },
+      ]}
+    >
+      <div class="grid">
+        {entries.map((entry) => (
+          <PromptCard entry={entry} />
+        ))}
+      </div>
+    </FilterPanel>
+  </div>
+</Base>

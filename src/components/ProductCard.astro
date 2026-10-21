@@ -1,0 +1,80 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import TeeBot from './TeeBot.astro';
+import PriceTag from './PriceTag.astro';
+import EntryStatus from './EntryStatus.astro';
+interface Props {
+  entry: CollectionEntry<'products'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const showPrice = Astro.url.pathname.startsWith('/apps/');
+---
+
+<article class="panel content-card product-card">
+  <div class="product-art">
+    <TeeBot pose="point" />
+    <span>APP PREVIEW · ARTWORK COMING</span>
+  </div>
+  <h3>
+    <a href={`/apps/${d.slug}/`}>{d.name}</a>
+  </h3>
+  <p class="muted">{d.tagline}</p>
+  {showPrice && <PriceTag cents={d.price_cents} />}
+  <div class="meta-row">
+    <EntryStatus status={d.status} />
+    <span class="small muted">
+      {d.episode
+        ? `Built in Ep ${d.episode.slice(1)}`
+        : 'Build episode coming soon'}
+    </span>
+  </div>
+  <a class="card-action" href={`/apps/${d.slug}/`}>
+    See what’s included <span aria-hidden="true">↗</span>
+  </a>
+</article>
+<style>
+  .product-art {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--background);
+    border-radius: 8px;
+    padding: 16px;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .product-art :global(img) {
+    width: 100px;
+    height: 100px;
+  }
+  .product-art span {
+    max-width: 150px;
+    font: 14px var(--font-code);
+    color: var(--muted);
+  }
+  @media (min-width: 960px) {
+    .product-card:only-child {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 0 32px;
+    }
+    .product-card:only-child .product-art {
+      grid-row: 1 / span 6;
+      min-height: 320px;
+      margin: 0;
+      align-self: stretch;
+      flex-direction: column;
+    }
+    .product-card:only-child .product-art :global(img) {
+      width: 200px;
+      height: 200px;
+    }
+    .product-card:only-child .product-art span {
+      max-width: none;
+    }
+    .product-card:only-child h3 {
+      margin-top: 0;
+    }
+  }
+</style>

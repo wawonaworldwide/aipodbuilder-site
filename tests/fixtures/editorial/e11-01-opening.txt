@@ -1,0 +1,7 @@
+I keep wondering which AI image service is actually best for t-shirt designs. I want a little app on my PC where I type one prompt, it goes to several image services at once, and I see the results side by side with what each one cost and how long it took. Then I'd like to score them without knowing which is which.
+
+A few things that matter to me:
+- Node.js and TypeScript with a small Express server, running at localhost.
+- Mock mode first with fake images, plus hard spending limits per service and in total.
+- Save every result to a CSV file.
+- Ask me before using any API key.

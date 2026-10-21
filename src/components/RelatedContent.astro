@@ -1,0 +1,50 @@
+---
+import { visibleCollection } from '../lib/content';
+interface Props {
+  related: {
+    loops?: string[];
+    skills?: string[];
+    posts?: string[];
+    apps?: string[];
+  };
+}
+const { related } = Astro.props;
+const catalogs = {
+  loops: await visibleCollection('loops'),
+  skills: await visibleCollection('skills'),
+  posts: await visibleCollection('posts'),
+  apps: await visibleCollection('products'),
+};
+const links = Object.entries(related).flatMap(([kind, ids]) =>
+  (ids ?? []).map((id) => {
+    const entries = catalogs[kind as keyof typeof catalogs];
+    const entry = entries.find((e) => e.id === id);
+    const label = entry
+      ? 'title' in entry.data
+        ? entry.data.title
+        : entry.data.name
+      : id.replaceAll('-', ' ');
+    return {
+      label,
+      href: entry ? `/${kind === 'posts' ? 'blog' : kind}/${id}/` : null,
+    };
+  }),
+);
+---
+
+{links.length > 0 && (
+  <section class="related">
+    <h2>Keep building</h2>
+    <ul>
+      {links.map((link) => (
+        <li>
+          {link.href ? (
+            <a href={link.href}>{link.label}</a>
+          ) : (
+            <span class="muted">{link.label} · coming soon</span>
+          )}
+        </li>
+      ))}
+    </ul>
+  </section>
+)}

@@ -1,0 +1,209 @@
+---
+interface Props {
+  fields?: {
+    key: string;
+    label: string;
+    options: { value: string; label: string }[];
+  }[];
+  search?: boolean;
+  chips?: boolean;
+}
+const { fields = [], search = false, chips = false } = Astro.props;
+---
+
+<div data-filter-scope>
+  <div class="filter-panel">
+    {fields.map((field) => (
+      <label>
+        {field.label}
+        <select data-filter={field.key} aria-label={field.label}>
+          <option value="">All</option>
+          {field.options.map((option) => (
+            <option value={option.value}>{option.label}</option>
+          ))}
+        </select>
+      </label>
+    ))}
+    {search && (
+      <label>
+        Search tags or keywords
+        <input
+          type="search"
+          data-search-filter
+          placeholder="Try ornaments or listings"
+        />
+      </label>
+    )}
+    <button class="utility-button" type="button" data-reset-filters>
+      Clear filters
+    </button>
+  </div>
+  {chips &&
+    fields.map((field) => (
+      <div
+        class="filter-chips"
+        role="group"
+        aria-label={`${field.label} shortcuts`}
+      >
+        <button
+          type="button"
+          class="utility-button"
+          data-filter-chip={field.key}
+          data-value=""
+          aria-pressed="true"
+        >
+          All categories
+        </button>
+        {field.options.map((option) => (
+          <button
+            type="button"
+            class="utility-button"
+            data-filter-chip={field.key}
+            data-value={option.value}
+            aria-pressed="false"
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+    ))}
+  <p class="small muted" data-filter-count role="status" aria-live="polite"></p>
+  <noscript>
+    <p class="small">
+      All entries are shown. Enable JavaScript to use the filters.
+    </p>
+  </noscript>
+  <slot />
+  <p class="panel" data-no-results hidden>
+    No matches yet. Try another filter or clear your search.
+  </p>
+</div>
+<script>
+  document
+    .querySelectorAll<HTMLElement>('[data-filter-scope]')
+    .forEach((scope) => {
+      const fields = [
+        ...scope.querySelectorAll<HTMLSelectElement>('[data-filter]'),
+      ];
+      const search = scope.querySelector<HTMLInputElement>(
+        '[data-search-filter]',
+      );
+      const cards = [
+        ...scope.querySelectorAll<HTMLElement>('[data-filter-item]'),
+      ];
+      const query = new URLSearchParams(location.search);
+      fields.forEach((field) => {
+        const value = query.get(field.dataset.filter ?? '') ?? '';
+        if ([...field.options].some((o) => o.value === value))
+          field.value = value;
+      });
+      if (search) search.value = query.get('q') ?? '';
+      const apply = (updateUrl = false) => {
+        scope
+          .querySelectorAll<HTMLButtonElement>('[data-filter-chip]')
+          .forEach((chip) =>
+            chip.setAttribute(
+              'aria-pressed',
+              String(
+                fields.find((f) => f.dataset.filter === chip.dataset.filterChip)
+                  ?.value === chip.dataset.value,
+              ),
+            ),
+          );
+        let count = 0;
+        for (const card of cards) {
+          const show =
+            fields.every(
+              (field) =>
+                !field.value ||
+                (card.dataset[field.dataset.filter ?? ''] ?? '')
+                  .split(' ')
+                  .includes(field.value),
+            ) &&
+            (!search?.value.trim() ||
+              (card.dataset.search ?? '').includes(
+                search.value.trim().toLowerCase(),
+              ));
+          card.hidden = !show;
+          if (show) count++;
+        }
+        const status = scope.querySelector('[data-filter-count]');
+        if (status)
+          status.textContent = `${count} ${count === 1 ? 'entry' : 'entries'} shown`;
+        const empty = scope.querySelector<HTMLElement>('[data-no-results]');
+        if (empty) empty.hidden = count > 0;
+        if (updateUrl) {
+          const url = new URL(location.href);
+          fields.forEach((f) => {
+            const key = f.dataset.filter!;
+            if (f.value) url.searchParams.set(key, f.value);
+            else url.searchParams.delete(key);
+          });
+          if (search?.value) url.searchParams.set('q', search.value);
+          else url.searchParams.delete('q');
+          history.replaceState(null, '', url);
+        }
+      };
+      fields.forEach((f) => f.addEventListener('change', () => apply(true)));
+      search?.addEventListener('input', () => apply(true));
+      scope
+        .querySelectorAll<HTMLButtonElement>('[data-filter-chip]')
+        .forEach((chip) =>
+          chip.addEventListener('click', () => {
+            const field = fields.find(
+              (f) => f.dataset.filter === chip.dataset.filterChip,
+            );
+            if (field) {
+              field.value = chip.dataset.value ?? '';
+              apply(true);
+            }
+          }),
+        );
+      scope
+        .querySelector('[data-reset-filters]')
+        ?.addEventListener('click', () => {
+          fields.forEach((f) => (f.value = ''));
+          if (search) search.value = '';
+          apply(true);
+        });
+      apply();
+    });
+</script>
+<style>
+  .filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .filter-chips button[aria-pressed='true'] {
+    background: var(--teal);
+    color: var(--ink);
+    border-color: var(--teal);
+  }
+  .filter-panel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: end;
+    margin-block: 32px;
+  }
+  .filter-panel label {
+    font-size: 14px;
+    display: grid;
+    gap: 8px;
+    flex: 1;
+    min-width: 160px;
+  }
+  .filter-panel select,
+  .filter-panel input {
+    background: var(--surface);
+    color: var(--foreground);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px;
+    min-height: 48px;
+    font: 16px var(--font-body);
+    width: 100%;
+  }
+</style>

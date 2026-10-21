@@ -1,0 +1,112 @@
+---
+import Base from '../../layouts/Base.astro';
+import TeeBot from '../../components/TeeBot.astro';
+import LicenseSummary from '../../components/LicenseSummary.astro';
+import EmailCapture from '../../components/EmailCapture.astro';
+import { storeMode } from '../../lib/content';
+---
+
+<Base
+  title="Your app download"
+  description="Your AI POD Builder app delivery page, with the steps for opening your print-on-demand tool and making it yours."
+  noindex
+>
+  {storeMode === 'off' ? (
+    <div class="container reading page-intro">
+      <TeeBot pose="point" />
+      <h1>App downloads are coming soon.</h1>
+      <p>
+        Checkout is not available in this preview. Visit the app page to sign up
+        for launch updates.
+      </p>
+      <a href="/apps/">Explore the apps ↗</a>
+    </div>
+  ) : (
+    <div class="container reading page-intro" data-order-page>
+      <TeeBot pose="celebrate" />
+      <h1 data-order-heading>Let’s check your order.</h1>
+      <p data-order-status role="status" aria-live="polite">
+        Open this page after test checkout to confirm your order.
+      </p>
+      <button type="button" data-order-retry hidden>
+        Check again
+      </button>
+      <section class="panel" data-order-ready hidden>
+        <h2 data-product-name>Your app</h2>
+        <p data-masked-email></p>
+        <button type="button" data-download>
+          Download your app
+        </button>
+        <p class="small">
+          This test build delivers a clearly marked placeholder ZIP.
+        </p>
+        <form data-owner-form>
+          <label>
+            <input type="checkbox" name="app_updates" /> Email me when this app
+            gets an update
+          </label>
+          <button type="submit" disabled>
+            Save my app update choice
+          </button>
+          <p role="status" aria-live="polite"></p>
+        </form>
+      </section>
+      <h2>Your first steps</h2>
+      <ol>
+        <li>Unzip the app when delivery is ready.</li>
+        <li>Open its README for the setup steps.</li>
+        <li>Sign in to Codex yourself.</li>
+        <li>Ask before using any API key.</li>
+      </ol>
+      <LicenseSummary />
+      <p>
+        <a href="/download/expired/">Need a fresh download link?</a>
+      </p>
+      <section class="panel">
+        <h2>Weekly niches + bonus prompts</h2>
+        <EmailCapture id="thanks-weekly-email" options />
+      </section>
+      <p>
+        <a href="/apps/">Back to the apps ↗</a>
+      </p>
+    </div>
+  )}
+</Base>
+<script>
+  import { setupOrderPage } from '../../lib/order-page';
+  setupOrderPage();
+</script>
+<style>
+  button {
+    padding: 12px 20px;
+    background: var(--teal);
+    color: var(--ink);
+    border: 0;
+    border-radius: 4px;
+    font: inherit;
+    min-height: 48px;
+    cursor: pointer;
+  }
+  button:disabled {
+    opacity: 0.7;
+    cursor: wait;
+  }
+  [data-owner-form] {
+    margin-top: 24px;
+  }
+  [data-owner-form] label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    margin-bottom: 12px;
+  }
+  [type='checkbox'] {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+  .panel {
+    margin-block: 24px;
+  }
+</style>

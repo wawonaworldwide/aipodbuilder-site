@@ -1,0 +1,20 @@
+---
+interface Props {
+  pose?: 'idle' | 'point' | 'celebrate';
+  decorative?: boolean;
+  bob?: boolean;
+}
+const { pose = 'idle', decorative = true, bob = false } = Astro.props;
+---
+
+<img
+  src={`/teebot/${pose}.svg`}
+  width="240"
+  height="240"
+  class:list={['teebot', { bob }]}
+  alt={
+    decorative
+      ? ''
+      : 'TEE-BOT, a pixel T-shirt robot with an orange hard hat and teal eyes'
+  }
+/>

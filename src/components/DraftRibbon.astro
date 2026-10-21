@@ -1,0 +1,33 @@
+---
+interface Props {
+  draft?: boolean;
+}
+const { draft = true } = Astro.props;
+---
+
+{draft && (
+  <div class="draft-ribbon">
+    <>
+      <strong>DRAFT</strong>
+      <span>Preview only. This build hasn’t had its human review yet.</span>
+    </>
+  </div>
+)}
+<style>
+  .draft-ribbon {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-block: 16px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  strong {
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: var(--magenta);
+    color: var(--ink);
+    font: 700 16px var(--font-display);
+  }
+</style>

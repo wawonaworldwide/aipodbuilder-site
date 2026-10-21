@@ -1,0 +1,14 @@
+CODEX_BUILD_PROMPT.md
+src/content/
+package-lock.json
+.dev.vars*
+.dev-outbox/
+.wrangler/
+.npm-cache/
+.local-tools/
+.astro/
+dist/
+node_modules/
+test-results/
+playwright-report/
+output/

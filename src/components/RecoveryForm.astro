@@ -1,0 +1,88 @@
+<form
+  class="email-capture"
+  action="/api/resend-download"
+  method="post"
+  data-sitekey={
+    import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'
+  }
+  aria-label="Request a fresh download"
+>
+  <fieldset>
+    <legend class="sr-only">Request a fresh download</legend>
+    <label for="recovery-email">Your purchase email</label>
+    <input
+      id="recovery-email"
+      name="email"
+      type="email"
+      autocomplete="email"
+      required
+      maxlength="254"
+      aria-describedby="recovery-status"
+    />
+    <div class="company-field" aria-hidden="true">
+      <label for="recovery-company">
+        Company
+        <input
+          id="recovery-company"
+          name="company"
+          tabindex="-1"
+          autocomplete="off"
+        />
+      </label>
+    </div>
+    <div data-turnstile role="group" aria-label="Bot check"></div>
+    <button type="submit" class="button">
+      Send a fresh link
+    </button>
+  </fieldset>
+  <p id="recovery-status" role="status" aria-live="polite" tabindex="-1"></p>
+  <noscript>Enable JavaScript to complete the bot check.</noscript>
+</form>
+<script>
+  import { setupEmailForms } from '../lib/email-form';
+  setupEmailForms();
+</script>
+<style>
+  fieldset {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    min-width: 0;
+  }
+  label {
+    display: block;
+    margin-bottom: 8px;
+  }
+  input {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 16px;
+    background: var(--background);
+    color: var(--foreground);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font: inherit;
+  }
+  button {
+    padding: 12px 20px;
+    background: var(--teal);
+    color: var(--ink);
+    border: 0;
+    border-radius: 4px;
+    font: inherit;
+    min-height: 48px;
+    cursor: pointer;
+  }
+  [data-turnstile] {
+    min-height: 65px;
+    margin-block: 16px;
+  }
+  .company-field {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+</style>

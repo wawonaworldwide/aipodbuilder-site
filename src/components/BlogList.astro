@@ -1,0 +1,65 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import PostCard from './PostCard.astro';
+interface Props {
+  entries: CollectionEntry<'posts'>[];
+  page?: number;
+  pages?: number;
+  tag?: string;
+}
+const { entries, page = 1, pages = 1, tag } = Astro.props;
+const title = tag
+  ? `Blog: ${tag}`
+  : page > 1
+    ? `Blog: page ${page}`
+    : 'Notes from the workbench';
+---
+
+<Base
+  title={title}
+  description={
+    tag
+      ? `Print-on-demand build notes tagged ${tag}. Read what worked, what broke, and what I’m checking next.`
+      : page > 1
+        ? `Page ${page} of print-on-demand build notes. More lessons, fixes, and free prompts from AI POD Builder.`
+        : 'Real print-on-demand build notes, fixes, and lessons from TEE-BOT. Take the prompts and keep building.'
+  }
+>
+  <div class="container">
+    <header class="page-intro">
+      <span class="eyebrow">The good bits. The broken bits. The fix.</span>
+      <h1>{tag ? `Filed under: ${tag}` : 'Notes from the workbench'}</h1>
+      <p>
+        Print-on-demand builds, explained one step at a time. TEE-BOT writes.
+        The check is human.
+      </p>
+      {tag && <a href="/blog/">← All posts</a>}
+    </header>
+    <div class="grid">
+      {entries.map((entry) => (
+        <PostCard entry={entry} />
+      ))}
+    </div>
+    {!entries.length && (
+      <p class="panel">
+        The first post is being checked. Come back for the build notes.
+      </p>
+    )}
+    {pages > 1 && (
+      <nav class="pagination" aria-label="Blog pages">
+        {page > 1 ? (
+          <a href={page === 2 ? '/blog/' : `/blog/page/${page - 1}/`}>
+            ← Previous
+          </a>
+        ) : (
+          <span></span>
+        )}
+        <span>
+          Page {page} of {pages}
+        </span>
+        {page < pages && <a href={`/blog/page/${page + 1}/`}>Next →</a>}
+      </nav>
+    )}
+  </div>
+</Base>

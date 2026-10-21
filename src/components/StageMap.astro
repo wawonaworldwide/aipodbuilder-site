@@ -1,0 +1,87 @@
+---
+import { stages, visibleCollection } from '../lib/content';
+const episodes = await visibleCollection('episodes');
+---
+
+<section class="section" aria-labelledby="pipeline-heading">
+  <div class="section-heading">
+    <h2 id="pipeline-heading">Your shop, one piece at a time.</h2>
+    <span class="small muted">The print-on-demand pipeline</span>
+  </div>
+  <ol class="stage-map">
+    {stages.map((stage, index) => {
+      const episode = episodes.find(
+        (e) =>
+          (e.data.stage === 'design-generation' ? 'designs' : e.data.stage) ===
+          stage.id,
+      );
+      return (
+        <li>
+          <a
+            href={
+              episode
+                ? `/episodes/${episode.data.slug}/`
+                : `/episodes/?stage=${stage.id}`
+            }
+            class:list={['stage', { covered: !!episode }]}
+          >
+            <span class="stage-number">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <strong>{stage.label}</strong>
+            <small>
+              {episode
+                ? `Ep ${episode.data.number}${episode.data.status === 'draft' ? ' · draft' : ''}`
+                : 'Not covered yet'}
+            </small>
+          </a>
+        </li>
+      );
+    })}
+  </ol>
+</section>
+<style>
+  .stage-map {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+  }
+  .stage {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 4px 12px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    text-decoration: none;
+    color: var(--foreground);
+    min-height: 100px;
+  }
+  .stage-number {
+    grid-row: span 2;
+    color: var(--muted);
+    font: 700 22px var(--font-display);
+  }
+  .stage small {
+    color: var(--muted);
+  }
+  .covered {
+    background: var(--lime);
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+  .covered small,
+  .covered .stage-number {
+    color: var(--ink);
+  }
+  @media (max-width: 639px) {
+    .stage-map {
+      grid-template-columns: 1fr;
+    }
+    .stage {
+      min-height: 80px;
+    }
+  }
+</style>

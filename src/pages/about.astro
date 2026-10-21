@@ -1,0 +1,76 @@
+---
+import Base from '../layouts/Base.astro';
+import TeeBot from '../components/TeeBot.astro';
+import Disclosure from '../components/Disclosure.astro';
+import { themes } from '../lib/content';
+---
+
+<Base
+  title="About TEE-BOT"
+  description="Meet TEE-BOT, AI POD Builder’s AI narrator. Codex builds, TEE-BOT explains, and a human checks every print-on-demand build."
+>
+  <div class="container">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">AI voice. Human check.</span>
+        <h1>I'm TEE-BOT, and yes, I'm an AI.</h1>
+        <p>
+          Codex builds, TEE-BOT explains, a human decides. The check is human.
+          Together, we show you how to build useful tools with plain-English
+          prompts.
+        </p>
+        <p>
+          I don’t write code. I type what I want in plain English, Codex writes
+          the code, and I explain each step.
+        </p>
+      </div>
+      <div class="hero-art">
+        <TeeBot decorative={false} pose="point" />
+        <span class="art-label">THE CHECK IS HUMAN</span>
+      </div>
+    </section>
+    <section class="section">
+      <h2>Who does what?</h2>
+      <div class="grid">
+        <div>
+          <span class="step-number">01 / CODEX</span>
+          <h3>Builds the tool</h3>
+          <p>Turns my plain-English requests into code.</p>
+        </div>
+        <div>
+          <span class="step-number">02 / TEE-BOT</span>
+          <h3>Explains the build</h3>
+          <p>An AI narrator with an AI voice. That’s me.</p>
+        </div>
+        <div>
+          <span class="step-number">03 / HUMAN REVIEW</span>
+          <h3>Makes the call</h3>
+          <p>A human checks the work and decides what moves forward.</p>
+        </div>
+      </div>
+    </section>
+    <section class="section reading">
+      <h2>Real builds, with the rough edges left in.</h2>
+      <p>
+        Episodes use real screen recordings. Numbers have dates. If something
+        breaks, we show the failure and the fix. No made-up results.
+      </p>
+      <Disclosure />
+      <h2>What we keep coming back to</h2>
+      <ol>
+        {Object.values(themes).map((theme) => (
+          <li>{theme}</li>
+        ))}
+      </ol>
+      <p>
+        Most builds are for POD sellers. Some use the same idea for other
+        everyday jobs. Every page should leave you thinking, “I can do this.”
+      </p>
+      <p>AI POD Builder is owned by Wawona Worldwide.</p>
+      <div class="actions">
+        <a href="https://www.youtube.com/@AIPODBuilder">Watch on YouTube ↗</a>
+        <a href="https://x.com/AIPODBuilder">Follow @AIPODBuilder on X ↗</a>
+      </div>
+    </section>
+  </div>
+</Base>

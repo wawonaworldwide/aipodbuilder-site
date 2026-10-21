@@ -1,0 +1,97 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+const sections = ['Episodes', 'Prompts', 'Loops', 'Apps', 'Blog', 'Newsletter'];
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="wordmark" href="/" aria-label="AI POD Builder home">
+      <img src="/teebot/idle.svg" width="44" height="44" alt="" />
+      <span>AI POD Builder</span>
+    </a>
+    <nav aria-label="Main navigation">
+      <ul>
+        {sections.map((label) => (
+          <li>
+            <a
+              href={`/${label.toLowerCase()}/`}
+              aria-current={
+                Astro.url.pathname.startsWith(`/${label.toLowerCase()}/`)
+                  ? 'page'
+                  : undefined
+              }
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <ThemeToggle />
+  </div>
+</header>
+<style>
+  .site-header {
+    border-bottom: 1px solid var(--surface);
+  }
+  .header-inner {
+    min-height: 96px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding-block: 16px;
+  }
+  .wordmark {
+    display: inline-flex;
+    gap: 12px;
+    align-items: center;
+    color: var(--foreground);
+    text-decoration: none;
+    font: 700 28px var(--font-display);
+    white-space: nowrap;
+  }
+  nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--muted);
+    font-size: 14px;
+    text-decoration: none;
+  }
+  nav a[aria-current] {
+    color: var(--link);
+    text-decoration: underline;
+  }
+  @media (max-width: 1199px) {
+    nav {
+      order: 3;
+      width: 100%;
+    }
+    nav ul {
+      justify-content: center;
+    }
+  }
+  @media (max-width: 639px) {
+    .header-inner {
+      gap: 12px;
+    }
+    .wordmark {
+      font-size: 22px;
+      gap: 4px;
+    }
+    nav ul {
+      gap: 8px 20px;
+      justify-content: flex-start;
+    }
+  }
+</style>

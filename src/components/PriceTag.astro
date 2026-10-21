@@ -1,0 +1,30 @@
+---
+interface Props {
+  cents: number;
+}
+const { cents } = Astro.props;
+const suffix = import.meta.env.PRICE_DISPLAY_SUFFIX ?? ' + tax';
+const price =
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
+    cents / 100,
+  ) + suffix;
+---
+
+<div class="price">
+  <strong>{price}</strong>
+  <span>one-time</span>
+</div>
+<style>
+  .price {
+    display: grid;
+    gap: 4px;
+    margin-block: 16px;
+  }
+  .price strong {
+    font-size: 28px;
+  }
+  .price span {
+    color: var(--muted);
+    font-size: 14px;
+  }
+</style>

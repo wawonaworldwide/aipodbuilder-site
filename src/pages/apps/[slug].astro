@@ -1,0 +1,161 @@
+---
+import { render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import DraftRibbon from '../../components/DraftRibbon.astro';
+import TeeBot from '../../components/TeeBot.astro';
+import PriceTag from '../../components/PriceTag.astro';
+import Faq from '../../components/Faq.astro';
+import TestModeRibbon from '../../components/TestModeRibbon.astro';
+import LicenseSummary from '../../components/LicenseSummary.astro';
+import EmailCapture from '../../components/EmailCapture.astro';
+import { visibleCollection, storeMode, formatDate } from '../../lib/content';
+export async function getStaticPaths() {
+  return (await visibleCollection('products')).map((entry) => ({
+    params: { slug: entry.data.slug },
+    props: { entry },
+  }));
+}
+interface Props {
+  entry: CollectionEntry<'products'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+const episode = (await visibleCollection('episodes')).find(
+  (e) => e.data.id === d.episode,
+);
+const coming = d.status === 'coming-soon' || storeMode === 'off';
+---
+
+<Base title={d.name} description={d.summary}>
+  <div class="container">
+    <header class="page-intro">
+      <Breadcrumbs
+        items={[{ label: 'Apps', href: '/apps/' }, { label: d.name }]}
+      />
+      <span class="eyebrow">A print-on-demand tool you can change</span>
+      <h1>{d.name}</h1>
+      <p>{d.tagline}</p>
+      <DraftRibbon draft={d.status === 'draft'} />
+    </header>
+    <TestModeRibbon />
+    <div class="product-layout">
+      <div class="product-placeholder">
+        {d.screenshots.length ? (
+          d.screenshots.map((s) => (
+            <img
+              src={s.src}
+              alt={s.alt}
+              width="600"
+              height="400"
+              loading="lazy"
+            />
+          ))
+        ) : (
+          <TeeBot pose="point" />
+        )}
+        <p class="small muted">
+          {d.screenshots.length
+            ? ''
+            : 'App screenshots will be added after I record the build.'}
+        </p>
+      </div>
+      <div>
+        <PriceTag cents={d.price_cents} />
+        {coming ? (
+          <EmailCapture id="launch-email" mode="launch" />
+        ) : (
+          <div>
+            <form action="/api/checkout" method="post">
+              <input type="hidden" name="slug" value={d.slug} />
+              <button
+                class="buy-preview"
+                type="submit"
+                aria-describedby="checkout-note"
+              >
+                Buy — test checkout
+              </button>
+            </form>
+            <p class="small muted" id="checkout-note">
+              Test mode only. The download is a placeholder ZIP.
+            </p>
+            <p class="small muted">
+              At launch: sold through Link (Stripe). You’ll see LINK.COM on your
+              statement. Instant download after payment.
+            </p>
+          </div>
+        )}
+        <p class="small muted">
+          Version {d.version} ·{' '}
+          {d.last_tested
+            ? `Last tested ${formatDate(d.last_tested)}`
+            : 'Not tested yet'}
+        </p>
+        {episode && (
+          <a href={`/episodes/${episode.data.slug}/`}>
+            Watch it get built in Episode {episode.data.number} ↗
+          </a>
+        )}
+      </div>
+    </div>
+    <div class="reading">
+      <section class="article-section prose">
+        <Content />
+        <h2>What it does</h2>
+        <ul>
+          {d.does.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+        <h2>What's in the ZIP</h2>
+        <p>A ZIP is one file containing the app and its folders.</p>
+        <ul>
+          {d.includes.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+        <pre><code>{d.whats_in_zip}</code></pre>
+        <h2>Requirements</h2>
+        <ul>
+          {d.requirements.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+        <h2>What it doesn't do</h2>
+        <ul>
+          {d.does_not.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+        <LicenseSummary />
+        <h2>If the download doesn’t work</h2>
+        <p>
+          The draft policy says to email us within 14 days if the download
+          doesn’t work or isn’t what the page describes.{' '}
+          <a href="/refunds/">Read the draft refund policy</a>.
+        </p>
+      </section>
+      <Faq items={d.faq} />
+      <section class="panel">
+        <h2>Keep this app on your radar</h2>
+        <EmailCapture id="app-update-email" mode="updates" options />
+      </section>
+    </div>
+  </div>
+</Base>
+<style>
+  .buy-preview {
+    display: block;
+    background: var(--orange);
+    color: var(--ink);
+    padding: 16px 24px;
+    border: 0;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-block: 24px;
+    min-height: 48px;
+    width: 100%;
+  }
+</style>

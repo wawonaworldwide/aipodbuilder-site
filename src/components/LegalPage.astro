@@ -1,0 +1,44 @@
+---
+import { render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from './Breadcrumbs.astro';
+import DraftRibbon from './DraftRibbon.astro';
+import TLDR from './TLDR.astro';
+import { visibleCollection, formatDate } from '../lib/content';
+interface Props {
+  kind: string;
+  title: string;
+  description: string;
+}
+const { kind, title, description } = Astro.props;
+const entry = (await visibleCollection('legal')).find((e) => e.id === kind);
+const rendered = entry ? await render(entry) : null;
+const Content = rendered?.Content;
+---
+
+<Base title={title} description={description}>
+  <article class="container reading page-intro">
+    <Breadcrumbs items={[{ label: title }]} />
+    <span class="eyebrow">AI POD Builder · Wawona Worldwide</span>
+    <h1>{title}</h1>
+    {entry ? (
+      <DraftRibbon draft={entry.data.status === 'draft'} />
+    ) : (
+      <p class="panel">
+        This policy is still being reviewed. It isn’t published yet, and the
+        store is not open.
+      </p>
+    )}
+    {entry && <TLDR items={entry.data.summary} title="In plain English" />}
+    {entry && (
+      <p class="small muted">
+        Updated {formatDate(entry.data.updated)} ·{' '}
+        {entry.data.status === 'draft' ? 'To be reviewed' : 'Final'}
+      </p>
+    )}
+    <div class="prose">{Content && <Content />}</div>
+    <p class="article-section">
+      <a href="/about/">About TEE-BOT and the people behind the site ↗</a>
+    </p>
+  </article>
+</Base>

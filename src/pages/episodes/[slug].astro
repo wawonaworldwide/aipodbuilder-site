@@ -1,0 +1,125 @@
+---
+import { render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import DraftRibbon from '../../components/DraftRibbon.astro';
+import VideoFacade from '../../components/VideoFacade.astro';
+import Disclosure from '../../components/Disclosure.astro';
+import TLDR from '../../components/TLDR.astro';
+import PromptBody from '../../components/PromptBody.astro';
+import IncentivePanel from '../../components/IncentivePanel.astro';
+import RelatedContent from '../../components/RelatedContent.astro';
+import {
+  visibleCollection,
+  stageLabel,
+  themes,
+  formatDate,
+  episodeLabel,
+} from '../../lib/content';
+import { transcripts } from '../../lib/episode-editorial';
+import { episodeTitles } from '../../lib/seo';
+export async function getStaticPaths() {
+  return (await visibleCollection('episodes')).map((entry) => ({
+    params: { slug: entry.data.slug },
+    props: { entry },
+  }));
+}
+interface Props {
+  entry: CollectionEntry<'episodes'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+const all = await visibleCollection('prompts');
+const prompts = d.prompts
+  .map((id) => all.find((p) => p.id === id))
+  .filter((p): p is CollectionEntry<'prompts'> => !!p);
+---
+
+<Base
+  title={episodeTitles[d.id] ?? `${episodeLabel(d.id)}: free prompts`}
+  description={`Free prompts for ${episodeLabel(d.id)}. Follow the print-on-demand build, copy each step, and see the results after their human review.`}
+>
+  <div class="container">
+    <header class="page-intro">
+      <Breadcrumbs
+        items={[
+          { label: 'Episodes', href: '/episodes/' },
+          { label: episodeLabel(d.id) },
+        ]}
+      />
+      <span class="eyebrow">Print-on-demand build · {episodeLabel(d.id)}</span>
+      {!/^\s*# /.test(entry.body ?? '') && <h1>{d.title}</h1>}
+      <DraftRibbon draft={d.status === 'draft'} />
+      <p class="small muted">
+        {d.published ? formatDate(d.published) : 'Recording date pending'} ·{' '}
+        {stageLabel(d.stage)}
+        {d.number === 17 ? ' · Episode number to confirm' : ''}
+      </p>
+      <ul class="tag-list">
+        {d.themes.map((t) => (
+          <li>
+            <span>{themes[t]}</span>
+          </li>
+        ))}
+      </ul>
+    </header>
+    <div class="reading prose">
+      <Content />
+    </div>
+    <VideoFacade youtubeId={d.youtube_id} title={d.title} />
+    <Disclosure />
+    {transcripts[d.id] && (
+      <details class="reading article-section">
+        <summary>Read the draft transcript</summary>
+        <p class="transcript">{transcripts[d.id]}</p>
+      </details>
+    )}
+    <TLDR
+      items={[
+        d.verdict ??
+          'Untested draft. I’ll add the verdict and real numbers after recording.',
+        'Every prompt below is free. Copy it without signing up.',
+      ]}
+    />
+    <section id="prompts" class="reading">
+      <h2>Take every prompt. Build along.</h2>
+      {prompts.map((prompt) => (
+        <PromptBody entry={prompt} />
+      ))}
+      {prompts.length !== d.prompts.length && (
+        <p class="muted">
+          Some prompts are still being checked and aren’t published yet.
+        </p>
+      )}
+    </section>
+    <IncentivePanel />
+    {d.one_shot_result && (
+      <section>
+        <h2>Can I one-shot it?</h2>
+        <p>{d.one_shot_result}</p>
+      </section>
+    )}
+    <RelatedContent related={d.related} />
+    <section class="status-legend">
+      <h2>What the status means</h2>
+      <dl>
+        <dt>Untested draft</dt>
+        <dd>This build has no reviewed results yet.</dd>
+        <dt>Tested + date</dt>
+        <dd>A real run with a dated result.</dd>
+        <dt>Worked after a fix</dt>
+        <dd>The first try broke. The fix is included.</dd>
+        <dt>Retired</dt>
+        <dd>Kept as a record; use a newer build.</dd>
+      </dl>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .transcript {
+    white-space: pre-wrap;
+  }
+</style>

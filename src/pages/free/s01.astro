@@ -1,0 +1,52 @@
+---
+import { getEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import CopyBlock from '../../components/CopyBlock.astro';
+import IncentivePanel from '../../components/IncentivePanel.astro';
+import { showDrafts } from '../../lib/content';
+import { extractPrompt } from '../../lib/markdown';
+if (showDrafts)
+  return Astro.redirect('/episodes/s01-day-with-my-pod-pipeline/#prompts', 302);
+const ids = [
+  's01-01-pipeline-map',
+  's01-02-research-inbox',
+  's01-03-approval-desk',
+];
+const prompts = await Promise.all(
+  ids.map(async (id) => {
+    const entry = await getEntry('prompts', id);
+    if (!entry) throw new Error('Starter prompt missing.');
+    return { title: entry.data.title, text: extractPrompt(entry.body || '') };
+  }),
+);
+---
+
+<Base
+  title="Free POD starter prompts"
+  description="Three free starter prompts to map your print-on-demand pipeline, build a research inbox and make a design approval desk. No signup needed."
+>
+  <article class="container reading page-intro">
+    <span class="eyebrow">A small start for your next build</span>
+    <h1>Three free POD starter prompts</h1>
+    <p>
+      Plan your print-on-demand pipeline, collect ideas in a research inbox, and
+      keep a human approval step before designs move ahead.
+    </p>
+    <p>
+      These are starter drafts, not tested results. Copy a prompt, fill in your
+      details, and review what your agent builds. The showcase video and episode
+      page are coming later.
+    </p>
+    {prompts.map((prompt, index) => (
+      <section class="article-section" id={'starter-' + (index + 1)}>
+        <h2>{prompt.title}</h2>
+        <CopyBlock title={prompt.title} text={prompt.text} />
+      </section>
+    ))}
+    <p>
+      All three prompts are free to read and copy. No email needed.{' '}
+      <a href="/license/">Read the resource license.</a>
+    </p>
+    <IncentivePanel id="starter-newsletter" />
+  </article>
+</Base>

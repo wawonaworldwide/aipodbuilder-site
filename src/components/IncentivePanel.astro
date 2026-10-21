@@ -1,0 +1,27 @@
+---
+import EmailCapture from './EmailCapture.astro';
+interface Props {
+  id?: string;
+  main?: boolean;
+}
+const { id = 'newsletter', main = false } = Astro.props;
+---
+
+<aside class="panel incentive" id={id} aria-labelledby={`${id}-heading`}>
+  <span class="eyebrow">A little help for your next build</span>
+  <h2 id={`${id}-heading`}>Weekly niches + bonus prompts</h2>
+  <p>
+    {main
+      ? "Every week: fresh POD niche picks and extra prompts that aren't in the videos, plus AI news filtered for sellers. Free. Every video prompt stays free on the site."
+      : "Want more? Get weekly niches + bonus prompts: fresh POD niche picks and extra prompts that aren't in the videos."}
+  </p>
+  <EmailCapture id={`${id}-email`} />
+</aside>
+<style>
+  .incentive {
+    margin-block: 48px;
+  }
+  .incentive h2 {
+    margin-top: 16px;
+  }
+</style>

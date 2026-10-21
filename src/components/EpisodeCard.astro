@@ -1,0 +1,32 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { stageLabel, episodeLabel } from '../lib/content';
+import EntryStatus from './EntryStatus.astro';
+interface Props {
+  entry: CollectionEntry<'episodes'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+---
+
+<article
+  class="panel content-card"
+  data-filter-item
+  data-stage={d.stage}
+  data-search={d.title.toLowerCase()}
+>
+  <span class="eyebrow">
+    {episodeLabel(d.id)} · {stageLabel(d.stage)}
+  </span>
+  <h3>
+    <a href={`/episodes/${d.slug}/`}>{d.title}</a>
+  </h3>
+  <EntryStatus status={d.status} />
+  <p class="muted small">
+    {d.prompts.length} free {d.prompts.length === 1 ? 'prompt' : 'prompts'} ·{' '}
+    {d.published ? 'Build along at your pace' : 'Recording and results pending'}
+  </p>
+  <a class="card-action" href={`/episodes/${d.slug}/#prompts`}>
+    Take the free prompts <span aria-hidden="true">↗</span>
+  </a>
+</article>

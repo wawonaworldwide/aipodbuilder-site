@@ -1,0 +1,51 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import TestModeRibbon from '../../components/TestModeRibbon.astro';
+import { visibleCollection } from '../../lib/content';
+const entries = await visibleCollection('products');
+---
+
+<Base
+  title="Apps you own"
+  description="Print-on-demand apps you can own and change. One-time downloads include source files, build prompts, and the app’s stage folders."
+>
+  <div class="container">
+    <header class="page-intro">
+      <span class="eyebrow">
+        Finished tools for your print-on-demand workflow
+      </span>
+      <h1>Apps you own</h1>
+      <p>Pay once, get the files, change anything. No subscription.</p>
+    </header>
+    <TestModeRibbon />
+    <div class="grid">
+      {entries.map((entry) => (
+        <ProductCard entry={entry} />
+      ))}
+    </div>
+    {!entries.length && (
+      <p class="panel">
+        The first app is still being checked. Nothing is available to buy yet.
+      </p>
+    )}
+    <section class="section reading">
+      <h2>What's in the download</h2>
+      <ul>
+        <li>The app’s source files, so you can change it.</li>
+        <li>The Codex prompts used to build it.</li>
+        <li>
+          Its ICM folder: stage folders and context notes that explain the
+          build.
+        </li>
+        <li>
+          A plain-English README and the <a href="/license/">App License</a>.
+        </li>
+      </ul>
+      <p>
+        Prefer to build it yourself?{' '}
+        <a href="/episodes/">The prompts are free on the episode page.</a>
+      </p>
+    </section>
+  </div>
+</Base>

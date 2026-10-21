@@ -1,0 +1,37 @@
+---
+import Base from '../../layouts/Base.astro';
+import EpisodeCard from '../../components/EpisodeCard.astro';
+import FilterPanel from '../../components/FilterPanel.astro';
+import { visibleCollection, stages } from '../../lib/content';
+const entries = (await visibleCollection('episodes')).sort(
+  (a, b) => (b.data.number ?? 0) - (a.data.number ?? 0),
+);
+const options = [
+  { value: 'showcase', label: 'Showcase' },
+  ...stages.map((s) => ({ value: s.id, label: s.label })),
+  { value: 'design-generation', label: 'Designs: image services' },
+];
+---
+
+<Base
+  title="Episodes and free build prompts"
+  description="Watch the print-on-demand builds, see what broke, and take every episode prompt for free. No email needed."
+>
+  <div class="container">
+    <header class="page-intro">
+      <span class="eyebrow">Watch. Copy. Build.</span>
+      <h1>Every build starts somewhere.</h1>
+      <p>
+        Print-on-demand tools, built with Codex. Every episode comes with the
+        prompts so you can follow along.
+      </p>
+    </header>
+    <FilterPanel fields={[{ key: 'stage', label: 'Pipeline stage', options }]}>
+      <div class="grid">
+        {entries.map((entry) => (
+          <EpisodeCard entry={entry} />
+        ))}
+      </div>
+    </FilterPanel>
+  </div>
+</Base>

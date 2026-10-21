@@ -1,0 +1,14 @@
+[
+  {
+    "slug": "ornament-bulk-creator",
+    "name": "Ornament Bulk Creator",
+    "tagline": "Paste a list of cities, pick art styles, get a round 900 x 900 ornament PNG for every combo.",
+    "version": "1.0.0",
+    "r2_key": "apps/ornament-bulk-creator/1.0.0/ornament-bulk-creator-1.0.0.zip",
+    "price_cents": 2499,
+    "currency": "usd",
+    "tax_code": "txcd_10202000",
+    "status": "draft",
+    "launch_coupon": null
+  }
+]
