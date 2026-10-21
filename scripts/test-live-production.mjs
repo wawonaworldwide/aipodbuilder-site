@@ -125,8 +125,11 @@ for (const path of [
 for (const kind of ['prompts', 'loops', 'skills']) {
   const r = await get('/api/' + kind + '.json');
   check(
-    kind + ' drafts absent',
-    r.status === 200 && JSON.parse(r.body).count === 0,
+    kind === 'prompts'
+      ? 'Only three public starter prompts exposed'
+      : kind + ' drafts absent',
+    r.status === 200 &&
+      JSON.parse(r.body).count === (kind === 'prompts' ? 3 : 0),
   );
 }
 const newsletter = (await get('/newsletter/')).body;
