@@ -20,7 +20,8 @@ const router = {
     const url = new URL(request.url);
     if (
       env.DEPLOY_ENV === 'production' &&
-      url.hostname === 'www.aipodbuilder.com'
+      (url.hostname === 'www.aipodbuilder.com' ||
+        (url.hostname === 'aipodbuilder.com' && url.protocol !== 'https:'))
     ) {
       url.hostname = 'aipodbuilder.com';
       url.protocol = 'https:';

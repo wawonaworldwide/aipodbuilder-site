@@ -171,6 +171,14 @@ check(
     sitemap.body.includes('/free/s01/') &&
     !sitemap.body.includes('s01-day-with'),
 );
+const httpsRedirect = await get(
+  'http://aipodbuilder.com/free/s01/?source=audit',
+);
+check(
+  'HTTP redirects to HTTPS preserving path and query',
+  httpsRedirect.status === 308 &&
+    httpsRedirect.headers.location === origin + '/free/s01/?source=audit',
+);
 const redirect = await get(
   'https://www.aipodbuilder.com/free/s01/?source=audit',
 );

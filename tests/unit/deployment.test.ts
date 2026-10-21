@@ -141,6 +141,19 @@ describe('deployment boundaries', () => {
     expect(apex.status).toBe(200);
     expect(apex.headers.get('X-Robots-Tag')).toBeNull();
   });
+  it('redirects production HTTP to HTTPS before processing form input', async () => {
+    const response = await worker.fetch(
+      new Request('http://aipodbuilder.com/api/subscribe?source=welcome', {
+        method: 'POST',
+        body: 'fixture',
+      }),
+      { DEPLOY_ENV: 'production', STORE_MODE: 'off' } as Env,
+    );
+    expect(response.status).toBe(308);
+    expect(response.headers.get('Location')).toBe(
+      'https://aipodbuilder.com/api/subscribe?source=welcome',
+    );
+  });
   it('keeps disabled store endpoints unavailable without storage or payment credentials', async () => {
     const env = {
       DEPLOY_ENV: 'production',
