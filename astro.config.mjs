@@ -35,6 +35,7 @@ export default defineConfig({
       watch: {
         ignored: [
           '**/.local-tools/**',
+          '**/*.tmp',
           '**/.npm-cache/**',
           '**/.wrangler/**',
           '**/.dev-outbox/**',

@@ -47,6 +47,6 @@ Generated builds, dependencies, local databases, email outboxes, private setting
 
 ## License and contact
 
-Website source and free starter prompts: [MIT](LICENSE). Third-party dependencies retain their own licenses. Any future paid app will state its own terms.
+Website source and free starter prompts: [MIT](LICENSE.txt). Third-party dependencies retain their own licenses. Any future paid app will state its own terms.
 
 Support: [tee-bot@aipodbuilder.com](mailto:tee-bot@aipodbuilder.com).

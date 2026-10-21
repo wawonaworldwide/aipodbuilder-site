@@ -58,7 +58,11 @@ test('conventional sitemap is valid XML with only public HTML routes', async ({
   expect(parsed.locations.length).toBeGreaterThan(0);
   for (const loc of parsed.locations) {
     const path = new URL(loc).pathname;
-    expect(path).not.toMatch(/^\/(thanks|download|api|free)\//);
+    if (path === '/free/s01/') {
+      expect(readFileSync('dist/free/s01/index.html', 'utf8')).toContain(
+        'Three free POD starter prompts',
+      );
+    } else expect(path).not.toMatch(/^\/(thanks|download|api|free)\//);
     expect(path).not.toBe('/newsletter/thanks/');
     expect(path).toMatch(/\/$/);
   }
